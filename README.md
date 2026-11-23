@@ -1,9 +1,5 @@
 ![InkMaiden](App.png)
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 0ab3e1312ec253044555bb0a7f9b1ba84711569c
 # InkMaiden
 
 **Ваша персональная мастерская для PocketBook.**
