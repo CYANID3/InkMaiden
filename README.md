@@ -1,3 +1,6 @@
+![InkMaiden](App.png)
+
+
 # InkMaiden
 
 **Ваша персональная мастерская для PocketBook.**
