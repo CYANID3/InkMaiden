@@ -1,0 +1,7 @@
+[target.x86_64-pc-windows-gnu]
+linker = "x86_64-w64-mingw32-gcc"
+ar = "x86_64-w64-mingw32-ar"
+
+[env]
+# MinGW на Linux: заголовки Windows в нижнем регистре, а unrar подключает «PowrProf.h»
+CXXFLAGS_x86_64_pc_windows_gnu = { value = "-I/home/claude/polka/build-support/mingw-include", relative = false }

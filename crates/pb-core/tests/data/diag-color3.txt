@@ -1,0 +1,343 @@
+@@@ report
+version=1
+time=1795278765
+@@@ firmware
+@@@ ebrmain
+adobefonts
+applications
+bin
+config
+cramfs
+cramfs.img
+demo
+fonts
+fsimage.dir
+fsimage.md5
+fsimage.tar.gz
+language
+lib
+libexec
+license
+logo
+lost+found
+plugins
+pocketbook
+qml
+resources
+sbin
+share
+themes
+translations
+@@@ fwfiles
+/ebrmain/config:
+desktop
+desktop_apps.cfg
+device.cfg
+device.cfg.gen
+extensions.cfg
+gestures
+global.cfg
+global.cfg.gen
+images_parameters.cfg
+lemmagen
+notification_panel
+rsslist.cfg
+rsslist.cfg.gen
+settings
+setup_wizard
+@@@ fwgrep
+@@@ uname
+Linux pocketbook 4.9.56+ #d6e9762be SMP PREEMPT Thu Dec 18 17:23:07 EET 2025 armv7l GNU/Linux
+@@@ proc_version
+Linux version 4.9.56+ (gcc version 7.5.0 (Linaro GCC 7.5-2019.12) ) #d6e9762be SMP PREEMPT Thu Dec 18 17:23:07 EET 2025
+@@@ cpuinfo
+processor	: 0
+model name	: ARMv7 Processor rev 5 (v7l)
+BogoMIPS	: 85.28
+Features	: half thumb fastmult vfp edsp neon vfpv3 tls vfpv4 idiva idivt vfpd32 lpae 
+CPU implementer	: 0x41
+CPU architecture: 7
+CPU variant	: 0x0
+CPU part	: 0xc07
+CPU revision	: 5
+
+processor	: 1
+model name	: ARMv7 Processor rev 5 (v7l)
+BogoMIPS	: 85.28
+Features	: half thumb fastmult vfp edsp neon vfpv3 tls vfpv4 idiva idivt vfpd32 lpae 
+CPU implementer	: 0x41
+CPU architecture: 7
+CPU variant	: 0x0
+CPU part	: 0xc07
+CPU revision	: 5
+
+processor	: 2
+model name	: ARMv7 Processor rev 5 (v7l)
+BogoMIPS	: 85.28
+Features	: half thumb fastmult vfp edsp neon vfpv3 tls vfpv4 idiva idivt vfpd32 lpae 
+CPU implementer	: 0x41
+CPU architecture: 7
+CPU variant	: 0x0
+CPU part	: 0xc07
+CPU revision	: 5
+
+processor	: 3
+model name	: ARMv7 Processor rev 5 (v7l)
+BogoMIPS	: 85.28
+Features	: half thumb fastmult vfp edsp neon vfpv3 tls vfpv4 idiva idivt vfpd32 lpae 
+CPU implementer	: 0x41
+CPU architecture: 7
+CPU variant	: 0x0
+CPU part	: 0xc07
+CPU revision	: 5
+
+Hardware	: sun8iw15
+Revision	: 0000
+Serial		: 0000000000000000
+@@@ cpufreq
+cpuinfo_max_freq=1800000
+cpuinfo_min_freq=480000
+scaling_cur_freq=1800000
+scaling_governor=interactive
+@@@ cpus
+0-3
+@@@ meminfo
+MemTotal:        1011000 kB
+MemFree:          569624 kB
+MemAvailable:     799824 kB
+Buffers:           57224 kB
+Cached:           235336 kB
+SwapCached:            0 kB
+Active:           192204 kB
+Inactive:         177568 kB
+Active(anon):      80072 kB
+Inactive(anon):    55348 kB
+Active(file):     112132 kB
+Inactive(file):   122220 kB
+Unevictable:           0 kB
+Mlocked:               0 kB
+SwapTotal:             0 kB
+SwapFree:              0 kB
+Dirty:                56 kB
+Writeback:            12 kB
+AnonPages:         77328 kB
+Mapped:            77124 kB
+Shmem:             58112 kB
+Slab:              21628 kB
+SReclaimable:      11528 kB
+SUnreclaim:        10100 kB
+KernelStack:        1184 kB
+PageTables:         1384 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:      505500 kB
+Committed_AS:     473832 kB
+VmallocTotal:     245760 kB
+VmallocUsed:           0 kB
+VmallocChunk:          0 kB
+CmaTotal:          49152 kB
+CmaFree:           46800 kB
+@@@ uptime
+430.73 1675.60
+@@@ loadavg
+2.18 1.53 0.75 1/141 2460
+@@@ mounts
+/dev/root / ext2 ro,relatime,block_validity,barrier,user_xattr,errors=remount-ro 0 0
+devtmpfs /dev devtmpfs rw,relatime,size=480664k,nr_inodes=120166,mode=755 0 0
+none /proc proc rw,relatime 0 0
+none /var tmpfs rw,relatime,size=131072k 0 0
+none /sys sysfs rw,relatime 0 0
+none /config configfs rw,relatime 0 0
+none /dev/shm tmpfs rw,relatime,size=262144k 0 0
+/dev/mmcblk0p2 /boot ext2 ro,relatime,block_validity,barrier,user_xattr,errors=remount-ro 0 0
+/dev/mmcblk0p5 /ebrmain ext2 ro,relatime,block_validity,barrier,user_xattr,errors=remount-ro 0 0
+/dev/loop0 /ebrmain/cramfs squashfs ro,relatime 0 0
+/dev/mmcblk0p6 /mnt/secure ext2 rw,relatime,block_validity,barrier,user_xattr 0 0
+/dev/user_int /mnt/ext1 vfat rw,dirsync,nosuid,nodev,noatime,fmask=0000,dmask=0000,allow_utime=0022,codepage=437,iocharset=utf8,shortname=mixed,errors=remount-ro 0 0
+@@@ partitions
+major minor  #blocks  name
+
+   1        0       8192 ram0
+   1        1       8192 ram1
+   1        2       8192 ram2
+   1        3       8192 ram3
+   7        0     302272 loop0
+ 179        0   30535680 mmcblk0
+ 179        1   28991471 mmcblk0p1
+ 179        2      65536 mmcblk0p2
+ 179        3      65536 mmcblk0p3
+ 179        4      65536 mmcblk0p4
+ 179        5    1048576 mmcblk0p5
+ 179        6     262144 mmcblk0p6
+ 179       48       4096 mmcblk0rpmb
+ 179       32       4096 mmcblk0boot1
+ 179       16       4096 mmcblk0boot0
+@@@ df
+Filesystem           1K-blocks      Used Available Use% Mounted on
+/dev/root                65407     15307     46824  25% /
+devtmpfs                480664         0    480664   0% /dev
+none                    131072       464    130608   0% /var
+none                    262144        12    262132   0% /dev/shm
+/dev/mmcblk0p2           65487     17629     44582  28% /boot
+/dev/mmcblk0p5         1039487    538925    448136  55% /ebrmain
+/dev/loop0              302336    302336         0 100% /ebrmain/cramfs
+/dev/mmcblk0p6          253871     25603    215161  11% /mnt/secure
+/dev/user_int         28977264  13325488  15651776  46% /mnt/ext1
+@@@ modules
+snd_aloop 15675 2 - Live 0xaf128000
+aic8800_bsp 70095 0 - Live 0xaf10f000
+mali 308923 0 - Live 0xaf0ab000 (O)
+stk83xx 10449 0 - Live 0xaf0a4000
+pt 202959 0 - Live 0xaf063000
+disp 322394 22 mali, Live 0xaf000000
+@@@ power:ac
+current_now=0
+model_name=ac
+online=0
+present=0
+type=Mains
+uevent=POWER_SUPPLY_NAME=ac
+voltage_now=0
+@@@ power:battery
+capacity=100
+charge_counter=2811000
+current_now=-2000
+energy_full_design=2813
+health=Good
+model_name=battery
+online=1
+present=1
+status=Full
+technology=LiFe
+temp=290
+type=Battery
+uevent=POWER_SUPPLY_NAME=battery
+voltage_max_design=4200000
+voltage_min_design=3300000
+voltage_now=4179000
+@@@ power:usb
+current_now=0
+model_name=usb
+online=1
+present=1
+type=USB
+uevent=POWER_SUPPLY_NAME=usb
+usb_otg=0
+voltage_now=0
+@@@ block:mmcblk0
+size=61071360
+name=BJTD4R
+type=MMC
+manfid=0x000015
+oemid=0x0100
+date=08/2023
+fwrev=0x0400000000000000
+hwrev=0x0
+rev=0x8
+life_time=0x01 0x01
+pre_eol_info=01
+cid=150100424a5444345204d94746008a3d
+@@@ block:mmcblk0boot0
+size=8192
+@@@ block:mmcblk0boot1
+size=8192
+@@@ block:mmcblk0rpmb
+size=8192
+@@@ thermal:thermal_zone0
+type=cpu_thermal_zone
+temp=43
+@@@ thermal:thermal_zone1
+type=gpu_thermal_zone
+temp=39
+@@@ thermal:thermal_zone2
+type=battery
+temp=29000
+@@@ fb
+name=
+virtual_size=1872,2808
+bits_per_pixel=32
+@@@ net
+lo=down
+usb0=down
+@@@ dmesg
+[    9.882853] sunxi-mmc sdc1: sdc set ios:clk 70000000Hz bm PP pm ON vdd 21 width 4 timing LEGACY(SDR12) dt B
+[   10.311104] driver: 'aicwf_sdio': driver_bound: bound to device 'mmc1:d1df:1'
+[   10.317188] bus: 'sdio': really_probe: bound device mmc1:d1df:1 to driver aicwf_sdio
+[   23.974655] aicwf_sdio mmc1:d1df:1 eth0: CLOSE
+[   24.093448] aicwf_sdio mmc1:d1df:1 eth0: Remove Interface
+[   24.093774] aicwf_sdio mmc1:d1df:1 eth0: CLOSE
+[   27.452374] sunxi-mmc sdc1: smc 1 p1 err, cmd 7, RE !!
+[   27.452402] sunxi-mmc sdc1: smc 1 p1 err, cmd 7, RE !!
+[   27.452424] sunxi-mmc sdc1: smc 1 p1 err, cmd 7, RE !!
+[   27.452445] sunxi-mmc sdc1: smc 1 p1 err, cmd 7, RE !!
+[   27.452543] bus: 'sdio': remove device mmc1:d1df:1
+[   27.452708] bus: 'sdio': remove device mmc1:d1df:2
+[   27.452828] mmc1: card d1df removed
+[   27.452885] bus: 'mmc': remove device mmc1:d1df
+[   27.452976] sunxi-mmc sdc1: sdc set ios:clk 0Hz bm PP pm OFF vdd 0 width 1 timing LEGACY(SDR12) dt B
+[   27.454172] sunxi-mmc sdc1: sdc set ios:clk 0Hz bm PP pm UP vdd 21 width 1 timing LEGACY(SDR12) dt B
+[   27.454263] sunxi-mmc sdc1: no vqmmc,Check if there is regulator
+[   27.469728] sunxi-mmc sdc1: sdc set ios:clk 400000Hz bm PP pm ON vdd 21 width 1 timing LEGACY(SDR12) dt B
+[   28.484657] sunxi-mmc sdc1: sdc set ios:clk 400000Hz bm PP pm ON vdd 21 width 1 timing LEGACY(SDR12) dt B
+[   28.487180] sunxi-mmc sdc1: sdc set ios:clk 400000Hz bm PP pm ON vdd 21 width 1 timing LEGACY(SDR12) dt B
+[   28.488545] sunxi-mmc sdc1: smc 1 p1 err, cmd 8, RE !!
+[   28.488584] sunxi-mmc sdc1: no support for card's volts
+[   28.488591] mmc1: error -22 whilst initialising SDIO card
+[   28.488834] sunxi-mmc sdc1: smc 1 p1 err, cmd 55, RE !!
+[   28.489106] sunxi-mmc sdc1: smc 1 p1 err, cmd 55, RE !!
+[   28.489140] sunxi-mmc sdc1: sdc set ios:clk 0Hz bm PP pm OFF vdd 0 width 1 timing LEGACY(SDR12) dt B
+[   28.759339] aicbsp: aicbsp_platform_power_on disable MMC_CAP_UHS_DDR50 for host ebddd800
+[   28.821858] sunxi-mmc sdc1: sdc set ios:clk 0Hz bm PP pm UP vdd 21 width 1 timing LEGACY(SDR12) dt B
+[   28.821962] sunxi-mmc sdc1: no vqmmc,Check if there is regulator
+[   28.836393] sunxi-mmc sdc1: sdc set ios:clk 400000Hz bm PP pm ON vdd 21 width 1 timing LEGACY(SDR12) dt B
+[   28.853864] sunxi-mmc sdc1: smc 1 p1 err, cmd 52, RTO !!
+[   28.854695] sunxi-mmc sdc1: smc 1 p1 err, cmd 52, RTO !!
+[   28.854714] sunxi-mmc sdc1: sdc set ios:clk 400000Hz bm PP pm ON vdd 21 width 1 timing LEGACY(SDR12) dt B
+[   28.857141] sunxi-mmc sdc1: sdc set ios:clk 400000Hz bm PP pm ON vdd 21 width 1 timing LEGACY(SDR12) dt B
+[   28.858995] sunxi-mmc sdc1: smc 1 p1 err, cmd 8, RTO !!
+[   28.864334] mmc1: queuing unknown CIS tuple 0x10 (5 bytes)
+[   28.869662] sunxi-mmc sdc1: sdc set ios:clk 50000000Hz bm PP pm ON vdd 21 width 1 timing LEGACY(SDR12) dt B
+[   28.869782] sunxi-mmc sdc1: sdc set ios:clk 50000000Hz bm PP pm ON vdd 21 width 4 timing LEGACY(SDR12) dt B
+[   28.869949] mmc1: queuing unknown CIS tuple 0x10 (5 bytes)
+[   28.871271] mmc1: new SDIO card at address 76bb
+[   28.871549] devices_kset: Moving mmc1:76bb to end of list
+[   28.871570] mmcblk: probe of mmc1:76bb rejects match -19
+[   28.871876] devices_kset: Moving mmc1:76bb:2 to end of list
+[   28.871987] driver: 'aicbsp_dummy_sdmmc': driver_bound: bound to device 'mmc1:76bb:2'
+[   28.872003] bus: 'sdio': really_probe: bound device mmc1:76bb:2 to driver aicbsp_dummy_sdmmc
+[   28.887114] bus: 'sdio': remove driver aicbsp_dummy_sdmmc
+[   28.887244] driver: 'aicbsp_dummy_sdmmc': driver_release
+[   28.887394] devices_kset: Moving mmc1:76bb:2 to end of list
+[   28.887645] sunxi-mmc sdc1: sdc set ios:clk 70000000Hz bm PP pm ON vdd 21 width 4 timing LEGACY(SDR12) dt B
+[   28.888437] driver: 'aicbsp_sdio': driver_bound: bound to device 'mmc1:76bb:2'
+[   28.888497] bus: 'sdio': really_probe: bound device mmc1:76bb:2 to driver aicbsp_sdio
+[   28.982184] devices_kset: Moving mmc1:76bb:1 to end of list
+[   28.982346] sunxi-mmc sdc1: sdc set ios:clk 70000000Hz bm PP pm ON vdd 21 width 4 timing LEGACY(SDR12) dt B
+[   29.509613] driver: 'aicwf_sdio': driver_bound: bound to device 'mmc1:76bb:1'
+[   29.511680] bus: 'sdio': really_probe: bound device mmc1:76bb:1 to driver aicwf_sdio
+[   91.281921] aicwf_sdio mmc1:76bb:1: Error while (un)registering debug entry for sta 1
+[   91.409462] aicwf_sdio mmc1:76bb:1: Error while (un)registering debug entry for sta 2
+[  128.741645] aicwf_sdio mmc1:76bb:1 eth0: CLOSE
+[  128.863459] aicwf_sdio mmc1:76bb:1 eth0: Remove Interface
+[  129.139355] sunxi-mmc sdc1: smc 1 p1 err, cmd 7, RE !!
+[  129.139382] sunxi-mmc sdc1: smc 1 p1 err, cmd 7, RE !!
+[  129.139404] sunxi-mmc sdc1: smc 1 p1 err, cmd 7, RE !!
+[  129.139423] sunxi-mmc sdc1: smc 1 p1 err, cmd 7, RE !!
+[  129.139517] bus: 'sdio': remove device mmc1:76bb:1
+[  129.139713] bus: 'sdio': remove device mmc1:76bb:2
+[  129.139816] mmc1: card 76bb removed
+[  129.139877] bus: 'mmc': remove device mmc1:76bb
+[  129.139962] sunxi-mmc sdc1: sdc set ios:clk 0Hz bm PP pm OFF vdd 0 width 1 timing LEGACY(SDR12) dt B
+[  129.141089] sunxi-mmc sdc1: sdc set ios:clk 0Hz bm PP pm UP vdd 21 width 1 timing LEGACY(SDR12) dt B
+[  129.141178] sunxi-mmc sdc1: no vqmmc,Check if there is regulator
+[  129.156395] sunxi-mmc sdc1: sdc set ios:clk 400000Hz bm PP pm ON vdd 21 width 1 timing LEGACY(SDR12) dt B
+[  130.171211] sunxi-mmc sdc1: sdc set ios:clk 400000Hz bm PP pm ON vdd 21 width 1 timing LEGACY(SDR12) dt B
+[  130.173719] sunxi-mmc sdc1: sdc set ios:clk 400000Hz bm PP pm ON vdd 21 width 1 timing LEGACY(SDR12) dt B
+[  130.175071] sunxi-mmc sdc1: smc 1 p1 err, cmd 8, RE !!
+[  130.175105] sunxi-mmc sdc1: no support for card's volts
+[  130.175112] mmc1: error -22 whilst initialising SDIO card
+[  130.175358] sunxi-mmc sdc1: smc 1 p1 err, cmd 55, RE !!
+[  130.175630] sunxi-mmc sdc1: smc 1 p1 err, cmd 55, RE !!
+[  130.175664] sunxi-mmc sdc1: sdc set ios:clk 0Hz bm PP pm OFF vdd 0 width 1 timing LEGACY(SDR12) dt B
+[  424.777446] FAT-fs (mmcblk0p1): utf8 is not a recommended IO charset for FAT filesystems, filesystem will be case sensitive!

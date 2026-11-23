@@ -1,0 +1,506 @@
+{
+    "applications": {
+        "_comment": [
+            "Fields - application key id\n",
+            "Support application subfields:\n",
+            "> \"path\" - path to application (Required)\n",
+            "> \"param\" - \"string\" or \"array of string\" of params for application (Optional)\n",
+            "> \"title\" - user friendly application title (Required)\n",
+            "> \"icon\" - icon name in theme or object path (Optional)\n",
+            "> \"focused icon\" - name of icon with focus in theme or object path (Optional)\n",
+            "> \"visible\" - show application in application list (Optional) (\"1\" as default)\n",
+            "> \"hideInAccessibility\" - hide application in accessibility mode (Optional)\n",
+            "Support fields values type:\n",
+            "> \"string value\" - end value\n",
+            "> \"object path\" - end value { \"path\": \"<path on user space>\"}\n",
+            "> \"device\" - object with values separated by field deviceID (e.g. \"all\", \"notouch\", \"626\", \"632\", \"740-2\" etc)\n",
+            "> \"partner\" - object with values separated by field customizer partner (e.g. \"tea\", \"knv\", \"legimi\" etc)\n",
+            "> \"has_audio\" - object with values separated by exist audio (\"all\", \"false\", \"true\")\n",
+            "> \"localization\" - object with values separated by field localization (e.g. \"WW\", \"RU\", \"CIS\")\n",
+            "> \"language\" - object with values separated by device languages (e.g. \"en\", \"ru\", \"de\")\n",
+            "> \"has_cloud\" - object with values separated by exist cloud (\"all\", \"false\", \"true\")\n",
+            "> \"globalcfg\" - object with values separated by key-value from global.cfg (any key-name from \"global.cfg\", objects from values of key. \"default\" - value not set)\n",
+            "Different objects value use only as named subobjects\n",
+            "Objects value must have field \"all\" with default value\n",
+            "Examples:\n",
+            "1) \"visible\": {\n",
+            "     \"device\": {\n",
+            "       \"all\": \"1\",\n",
+            "       \"632\": \"0\",\n",
+            "       \"1040\": \"0\"\n",
+            "     }\n",
+            "   }\n",
+            "2) \"visible\": {\n",
+            "     \"device\": {\n",
+            "       \"all\": \"1\",\n",
+            "       \"632\": {\n",
+            "         \"partner\": {\n",
+            "           \"all\": \"1\",\n",
+            "           \"umbreit\": \"0\"\n",
+            "       }\n",
+            "     }\n",
+            "   }\n",
+            "3) \"visible\": {\n",
+            "     \"partner\": {\n",
+            "       \"all\": \"0\",\n",
+            "       \"legimi\": {\n",
+            "         \"device\": {\n",
+            "           \"all\": \"1\",\n",
+            "           \"740\": \"0\"\n",
+            "       }\n",
+            "     }\n",
+            "   }\n",
+            "end."
+        ],
+        "PB_AudioBooks": {
+            "title": "@Audio_books",
+            "path": "/ebrmain/bin/audio_books.app",
+            "icon": "desktop_app_audio_books",
+            "focused_icon": "desktop_app_audio_books_f",
+            "ctrl_panel_icon": "ctrl_panel_night_audiobooks",
+            "visible": {
+                "has_audio": {
+                    "all": "0",
+                    "true": "1"
+                }
+            }
+        },
+        "PB_Browser": {
+            "title": "@Browser",
+            "path": "/ebrmain/bin/webbrowser.sh",
+            "icon": "desktop_app_webbrowser",
+            "focused_icon": "desktop_app_webbrowser_f",
+            "ctrl_panel_icon": "ctrl_panel_night_browser",
+            "visible": {
+                "device": {
+                    "all": "1",
+                    "notouch": "0"
+                }
+            }
+        },
+        "PB_Bookstore": {
+            "title": {
+                "partner": {
+                    "all": "@BookStoreShortName",
+                    "legimi": "@Legimi"
+                }
+            },
+            "path": {
+                "partner": {
+                    "all": "/ebrmain/bin/login-scenario.app",
+                    "pocketbook": "/ebrmain/bin/bookstore-2.app",
+                    "bookland": "/ebrmain/bin/bookstore-2.app",
+                    "default": "/ebrmain/bin/bookstore-2.app",
+                    "legimi": "/ebrmain/bin/legimi_viewer.app"
+                }
+            },
+            "icon": {
+                "partner": {
+                    "all": "bookstore",
+                    "legimi": "ci_legimi"
+                }
+            },
+            "focused_icon": {
+                "partner": {
+                    "all": "desktop_app_bookstore_f",
+                    "legimi": "desktop_app_legimi_viewer_f"
+                }
+            },
+            "ctrl_panel_icon" : {
+                "partner": {
+                    "all": "ctrl_panel_bookstore",
+                    "legimi": "ctrl_panel_legimi"
+                }
+            },
+            "visible": {
+                "device": {
+                    "all": {
+                        "partner": {
+                           "all": "1",
+                    	    "empikgo": "0"
+                        }
+                    },
+                    "notouch": "0"
+                }
+            }
+        },
+        "PB_Bookstore2empikgo": {
+            "title": {
+                "partner": {
+                    "all": "@BookStoreShortName",
+                    "empikgo": "@Legimi"
+                }
+            },
+            "path": {
+                "partner": {
+                    "all": "/ebrmain/bin/login-scenario.app",
+                    "empikgo": "/ebrmain/bin/legimi_viewer.app"
+                }
+            },
+            "icon": {
+                "partner": {
+                    "all": "bookstore",
+                    "empikgo": "ci_legimi"
+                }
+            },
+            "focused_icon": {
+                "partner": {
+                    "all": "desktop_app_bookstore_f",
+                    "empikgo": "desktop_app_legimi_viewer_f"
+                }
+            },
+            "ctrl_panel_icon" : {
+                "partner": {
+                    "all": "ctrl_panel_bookstore",
+                    "empikgo": "ctrl_panel_legimi"
+                }
+            },
+            "visible": {
+                "device": {
+                    "all": {
+                        "partner": {
+                           "all": "0",
+                           "_comment": "For \"empikgo\" we also check \"legimi_off\" server parameter in source code",
+                           "empikgo": "1"
+                        }
+                    },
+                    "notouch": "0"
+                }
+            }
+        },
+        "PB_Calc": {
+            "title": "@Calc",
+            "path": "/ebrmain/bin/calc.app",
+            "icon": "desktop_app_calc",
+            "focused_icon": "desktop_app_calc_f",
+            "ctrl_panel_icon" : "ctrl_panel_night_calculator",
+            "hideInAccessibility": true
+        },
+        "PB_Calendar": {
+            "title": "@Calendar",
+            "path": "/ebrmain/bin/calendar.app",
+            "icon": "desktop_app_calendar",
+            "focused_icon": "desktop_app_calendar_f",
+            "ctrl_panel_icon" : "ctrl_panel_night_calendar",
+            "hideInAccessibility": true
+        },
+        "PB_Chess": {
+            "title": "@Chess",
+            "path": "/ebrmain/bin/chess.app",
+            "icon": "desktop_app_chess",
+            "focused_icon": "desktop_app_chess_f",
+            "ctrl_panel_icon" : "ctrl_panel_chess",
+            "visible": {
+                "partner": {
+                    "all": "1",
+                    "acomp_kids": "0"
+                }
+            },
+            "hideInAccessibility": true
+        },
+        "PB_Cloud": {
+            "title": "@PBCloud",
+            "path": "/ebrmain/applications/pbcloud.app",
+            "icon": "pb_cloud",
+            "focused_icon": "desktop_app_pbcloud_f",
+            "ctrl_panel_icon" : "ctrl_panel_pbcloud",
+            "visible": {
+                "has_cloud": {
+                    "all": "0",
+                    "true": {
+                        "partner": {
+                            "all": "1",
+                            "vivlio": "0"
+                        }
+                    },
+                    "false": "0"
+                }
+            }
+       },
+        "PB_Dictionary": {
+            "title": "@Dictionary",
+            "path": "/ebrmain/bin/Dictionary.app",
+            "icon": "desktop_app_dictionary",
+            "focused_icon": "desktop_app_dictionary_f",
+            "ctrl_panel_icon" : "ctrl_panel_dictionary",
+            "hideInAccessibility": true
+        },
+        "PB_Dropbox": {
+            "title": "@Dropbox",
+            "path": "/ebrmain/bin/dropboxctl.app",
+            "icon": "dropbox",
+            "focused_icon": "desktop_app_dropboxctl_f",
+            "ctrl_panel_icon" : "ctrl_panel_dropbox",
+            "visible": {
+                "partner": {
+                    "all": "1",
+                    "vivlio": "0"
+                }
+            }
+        },
+        "PB_Empik": {
+            "title": "@empik_store",
+            "path": "/ebrmain/bin/empik_store.app",
+            "icon": "desktop_app_empik",
+            "focused_icon": "desktop_app_empik_f",
+            "ctrl_panel_icon" : "ctrl_panel_empikgo",
+            "visible": {
+                "partner": {
+                    "all": "0",
+                    "legimi": "1",
+                    "empikgo": "1"
+                }
+            },
+            "hideInAccessibility": true
+        },
+        "PB_Gallery": {
+            "title": "@Gallery",
+            "path": "/ebrmain/bin/mediaexplorer.app",
+            "icon": "desktop_app_gallery",
+            "focused_icon": "desktop_app_gallery_f",
+            "ctrl_panel_icon" : "ctrl_panel_gallery",
+            "hideInAccessibility": true
+        },
+        "PB_Klondike": {
+            "title": "@Kosynka",
+            "path": "/ebrmain/bin/kosynka.app",
+            "icon": "desktop_app_klondike",
+            "focused_icon": "desktop_app_klondike_f",
+            "ctrl_panel_icon" : "ctrl_panel_klondike",
+            "visible": {
+                "partner": {
+                    "all": "1",
+                    "acomp_kids": "0"
+                }
+            },
+            "hideInAccessibility": true
+        },
+        "PB_Library": {
+            "title": "@Library",
+            "path": "/ebrmain/bin/explorer.app",
+            "icon": "desktop_app_library",
+            "focused_icon": "desktop_app_library_f",
+            "ctrl_panel_icon" : "ctrl_panel_library"
+        },
+        "PB_Notes": {
+            "title": "@Notes",
+            "path": "/ebrmain/bin/notes.app",
+            "icon": "note",
+            "focused_icon": "desktop_app_notes_f",
+            "ctrl_panel_icon" : "ctrl_panel_notes"
+        },
+        "PB_Onleihe": {
+            "title": "@PBOnleiheLibrary",
+            "path": "/ebrmain/bin/pbonleihe_library.app",
+            "icon": "desktop_app_pbonleihe_library",
+            "focused_icon": "desktop_app_pbonleihe_library_f",
+            "ctrl_panel_icon" : "ctrl_panel_onleihe",
+	    "visible": {
+                "partner": {
+                    "all": "0",
+                    "knv": "1",
+                    "buchmedia": "1",
+                    "umbreit": "1",
+                    "buchzentrumagbz": "1",
+                    "exlibris": "1",
+                    "pocketbook": {
+                        "language" : {
+                            "all": "0",
+                            "de" : {
+                                "localization": {
+                                    "all": "0",
+                                    "WW": "1"
+                                }
+                            },
+                            "en" : {
+                                "localization": {
+                                    "all": "0",
+                                    "WW": "1"
+                                }
+                            }
+                        }
+                    },
+                    "bookland": {
+                        "language" : {
+                            "all": "0",
+                            "de" : {
+                                "localization": {
+                                    "all": "0",
+                                    "WW": "1"
+                                }
+                            },
+                            "en" : {
+                                "localization": {
+                                    "all": "0",
+                                    "WW": "1"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "language" : {
+                            "all": "0",
+                            "de" : {
+                                "localization": {
+                                    "all": "0",
+                                    "WW": "1"
+                                }
+                            },
+                            "en" : {
+                                "localization": {
+                                    "all": "0",
+                                    "WW": "1"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "PB_Player": {
+            "title": "@Audio_player",
+            "path": "/ebrmain/bin/music_player.app",
+            "icon": "desktop_app_music_player",
+            "focused_icon": "desktop_app_music_player_f",
+            "ctrl_panel_icon" : "ctrl_panel_music_player",
+            "visible": {
+                "has_audio": {
+                    "all": "0",
+                    "true": "1"
+                }
+            }
+        },
+        "PB_RSSNews": {
+            "title": "@Pocketnews",
+            "path": "/ebrmain/bin/pocketnews.app",
+            "icon": "desktop_app_pocketnews",
+            "focused_icon": "desktop_app_pocketnews_f",
+            "ctrl_panel_icon" : "ctrl_panel_rss",
+            "hideInAccessibility": true
+        },
+        "PB_Scribble": {
+            "title": "@Scribble",
+            "path": "/ebrmain/bin/scribble.app",
+            "icon": "desktop_app_scribble",
+            "focused_icon": "desktop_app_scribble_f",
+            "ctrl_panel_icon" : "ctrl_panel_scribble",
+            "visible": {
+                "device": {
+                    "all": {
+                        "partner": {
+                            "all": "1",
+                            "acomp_kids": "0"
+                        }
+                    },
+                    "notouch": "0"
+                }
+            },
+            "hideInAccessibility": true
+        },
+        "PB_SendToPB": {
+            "title": "@SendToPocketbook",
+            "path": "/ebrmain/bin/s2pb_wizard.app",
+            "icon": "desktop_app_sendtopocketbook",
+            "focused_icon": "desktop_app_sendtopocketbook_f",
+            "ctrl_panel_icon" : "ctrl_panel_send_to_pb",
+            "visible": {
+                "partner": {
+                    "all": "1",
+                    "vivlio": "0"
+                }
+            }
+        },
+        "PB_Settings": {
+            "title": "@Settings",
+            "path": "/ebrmain/bin/settings.app",
+            "params": ["-o", "head"],
+            "icon": {
+                "globalcfg": {
+                    "new_firmware": {
+                        "1": "desktop_app_settings_new_update",
+                        "default": "desktop_app_settings"
+                    }
+                }
+            },
+            "focused_icon": {
+                "globalcfg": {
+                    "new_firmware": {
+                        "1": "desktop_app_settings_new_update_inv",
+                        "default": "desktop_app_settings_f"
+                    }
+                }
+            },
+            "ctrl_panel_icon" : "ctrl_panel_settings"
+        },
+        "PB_Snake": {
+            "title": "@Snake",
+            "path": "/ebrmain/bin/snake.app",
+            "icon": "desktop_app_snake",
+            "focused_icon": "desktop_app_snake_f",
+            "ctrl_panel_icon" : "desktop_app_snake",
+            "visible": {
+                "device": {
+                    "all": "0",
+                    "notouch": {
+                        "partner": {
+                            "all": "1",
+                            "acomp_kids": "0"
+                        }
+                    }
+                }
+            },
+            "hideInAccessibility": true
+        },
+        "PB_Painter": {
+            "title": "@coloring",
+            "path": "/ebrmain/bin/coloring.app",
+            "icon": "desktop_app_coloring",
+            "focused_icon": "desktop_app_coloring_f",
+            "ctrl_panel_icon" : "ctrl_panel_coloring",
+            "visible": {
+                "device": {
+                    "all": "1",
+                    "notouch": "0"
+                }
+            },
+            "hideInAccessibility": true
+        },
+        "PB_Sudoku": {
+            "title": "@Sudoku",
+            "path": "/ebrmain/bin/sudoku.app",
+            "icon": "desktop_app_sudoku",
+            "focused_icon": "desktop_app_sudoku_f",
+            "ctrl_panel_icon" : "ctrl_panel_sudoku",
+            "visible": {
+                "partner": {
+                    "all": "1",
+                    "acomp_kids": "0"
+                }
+            },
+            "hideInAccessibility": true
+        },
+        "PB_Enotes": {
+            "title": "@Enotes",
+            "path": "/ebrmain/bin/pb_notes_app.app",
+            "icon": "desktop_app_enotes",
+            "focused_icon": "desktop_app_enotes_f",
+            "ctrl_panel_icon" : "ctrl_panel_enotes",
+            "hideInAccessibility": true
+        },
+        "PB_Digital_Frame": {
+            "title": "@digital_frame",
+            "path": "/ebrmain/bin/digital_frame.app",
+            "icon": "digital_frame",
+            "focused_icon": "digital_frame_inv",
+            "ctrl_panel_icon" : "ctrl_panel_digital_photo_frame",
+            "hideInAccessibility": true
+        },
+        "PB_Overdrive": {
+            "title": "@OverDrive",
+            "path": "/ebrmain/bin/libby.app",
+            "icon": "desktop_app_libby",
+            "focused_icon": "desktop_app_libby_f",
+            "ctrl_panel_icon" : "ctrl_panel_libby"
+        }
+    }
+}

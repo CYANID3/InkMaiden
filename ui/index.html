@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>InkMaiden</title>
+<link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/theme.css">
+<link rel="icon" href="img/icon.png">
+<script>try { const t = localStorage.getItem('inkmaiden-theme') || 'light'; document.documentElement.dataset.theme = t === 'auto' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : t } catch (e) {}</script>
+</head>
+<body>
+<div class="app">
+  <!-- верхняя панель: знак, разделы, справа — читалка, «На читалку» и настройки -->
+  <header class="top" aria-label="Разделы">
+    <div class="brand"><img src="img/icon.png" alt=""><b>InkMaiden</b></div>
+    <nav id="nav" aria-label="Разделы"></nav>
+    <div class="top-right">
+      <button class="cur" id="cur" type="button" title="Текущая читалка: память, библиотека, диагностика"></button>
+      <nav id="nav-foot" aria-label="Настройки"></nav>
+    </div>
+    <div class="ver" id="ver" hidden></div>
+  </header>
+  <main class="main" id="main"></main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

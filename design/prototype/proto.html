@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>InkMaiden — прототип интерфейса</title>
+<style>
+/*FONTS*/
+:root{
+  --paper:#ECECE6; --surface:#F7F7F3; --card:#FFFFFF; --line:#DDDDD4; --line-2:#C9C9BF;
+  --ink:#1B1B1A; --ink-2:#3A3A36; --muted:#6A6A62;
+  --olive:#6E6E33; --olive-2:#55552A; --olive-3:#808040; --wash:#EEEEDC; --tint:#E3E3C6;
+  --ok:#3F7A3A; --warn:#9A6A14; --err:#A3402E; --stage:#E2E2DA;
+  --r-s:8px; --r-m:12px; --r-l:18px;
+  --shadow:0 1px 0 rgba(27,27,26,.04),0 10px 28px -16px rgba(27,27,26,.28);
+  --fs-xs:12px; --fs-s:13.5px; --fs:15px; --fs-l:19px; --fs-xl:28px;
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --paper:#2B2B28; --surface:#32322F; --card:#3A3A36; --line:#4A4A45; --line-2:#5C5C56;
+  --ink:#EEEEE7; --ink-2:#D8D8CF; --muted:#AEAEA4;
+  --olive:#C4C487; --olive-2:#D6D69E; --olive-3:#B5B577; --wash:#41412D; --tint:#4B4B33;
+  --ok:#8FCF99; --warn:#EDBB71; --err:#F39A90; --stage:#242422;
+  --shadow:0 1px 0 rgba(0,0,0,.12),0 12px 28px -16px rgba(0,0,0,.5);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font:400 var(--fs)/1.5 Onest,"Segoe UI",system-ui,sans-serif;background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--olive-3);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ---------- оболочка */
+.app{display:grid;grid-template-columns:248px 1fr;height:100vh}
+.rail{display:flex;flex-direction:column;gap:6px;padding:18px 14px;border-right:1px solid var(--line);background:var(--surface);min-height:0}
+.brand{display:flex;align-items:center;gap:11px;padding:4px 8px 14px}
+.brand svg{width:38px;height:38px;flex:none}
+.brand b{display:block;font-size:19px;font-weight:600;letter-spacing:-.01em}
+.brand span{font-size:var(--fs-xs);color:var(--muted)}
+.cur{display:grid;grid-template-columns:34px 1fr;gap:2px 10px;align-items:center;padding:10px;border-radius:var(--r-m);background:var(--card);border:1px solid var(--line);margin-bottom:10px;cursor:pointer;text-align:left}
+.cur .mini{grid-row:span 2}
+.cur b{font-size:var(--fs-s);font-weight:600}
+.cur small{font-size:var(--fs-xs);color:var(--muted);display:flex;align-items:center;gap:6px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--line-2);flex:none}
+.dot.on{background:var(--ok)}
+.nav{display:grid;gap:2px}
+.nav button{display:grid;grid-template-columns:22px 1fr;gap:0 11px;align-items:center;padding:10px 10px;border:0;border-radius:var(--r-m);background:none;text-align:left;cursor:pointer;color:var(--ink-2)}
+.nav button svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.nav button b{font-weight:500}
+.nav button:hover{background:var(--paper)}
+.nav button[aria-current]{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+.nav button[aria-current] svg{stroke:var(--olive)}
+.rail .spacer{flex:1}
+.rail .ver{font-size:var(--fs-xs);color:var(--muted);padding:6px 10px 0}
+.main{overflow:auto;min-width:0;position:relative}
+.page{padding:30px 38px 120px;max-width:1360px}
+.head{display:flex;align-items:flex-end;gap:18px;margin-bottom:22px}
+.head h1{font-size:var(--fs-xl);font-weight:600;letter-spacing:-.02em;margin:0}
+.head p{margin:4px 0 0;color:var(--muted);max-width:68ch}
+.head .grow{flex:1}
+
+/* ---------- элементы */
+.btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:var(--r-m);border:1px solid var(--line);background:var(--card);cursor:pointer;font-weight:500;white-space:nowrap}
+.btn:hover{border-color:var(--line-2)}
+.btn.primary{background:var(--olive-2);border-color:var(--olive-2);color:#fff}
+:root[data-theme="dark"] .btn.primary{color:#22221f}
+.btn.quiet{background:none;border-color:transparent;color:var(--olive)}
+.btn.danger{color:var(--err)}
+.btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r-l);padding:20px 22px;box-shadow:var(--shadow)}
+.panel h2{font-size:var(--fs-l);font-weight:600;margin:0 0 4px;letter-spacing:-.01em}
+.hint{color:var(--muted);font-size:var(--fs-s);margin:0 0 14px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-xs);font-weight:500;padding:3px 10px;border-radius:99px;background:var(--wash);color:var(--olive-2);white-space:nowrap}
+.chip.ok{background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok)}
+.chip.warn{background:color-mix(in srgb,var(--warn) 15%,transparent);color:var(--warn)}
+.chip.mute{background:var(--paper);color:var(--muted)}
+.seg{display:inline-flex;background:var(--paper);border-radius:var(--r-m);padding:3px;gap:2px}
+.seg button{border:0;background:none;padding:7px 14px;border-radius:9px;cursor:pointer;color:var(--muted);font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+.input,select.input{height:40px;border:1px solid var(--line);border-radius:var(--r-m);background:var(--card);padding:0 12px;min-width:0;width:100%}
+.field{display:grid;gap:6px}
+.field>span{font-weight:500;font-size:var(--fs-s)}
+.field small{color:var(--muted);font-size:var(--fs-xs)}
+.row{display:flex;gap:10px;align-items:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.stack{display:grid;gap:18px;align-content:start}
+.check{display:flex;gap:10px;align-items:center;cursor:pointer;font-size:var(--fs-s)}
+.check input{accent-color:var(--olive-3);width:16px;height:16px}
+.check input.toggle{width:38px;height:22px}
+.toggle{appearance:none;width:38px;height:22px;border-radius:99px;background:var(--line-2);position:relative;cursor:pointer;flex:none;transition:.2s}
+.toggle::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.2s}
+.toggle:checked{background:var(--olive-3)}
+.toggle:checked::after{left:19px}
+.code{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;background:var(--paper);padding:1px 6px;border-radius:5px}
+dl.kv{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;margin:0;font-size:var(--fs-s)}
+dl.kv dt{color:var(--muted)}
+dl.kv dd{margin:0}
+dd.unk{color:var(--muted);font-style:italic}
+.actions{position:sticky;bottom:0;margin:22px -38px -120px;padding:14px 38px;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(8px);border-top:1px solid var(--line);display:flex;gap:10px;align-items:center;z-index:5}
+.actions .where{margin-right:auto;color:var(--muted);font-size:var(--fs-s);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.actions .where b{color:var(--ink-2);font-weight:500}
+
+/* ---------- рисунок читалки */
+.reader-art{display:block}
+.mini{width:30px;height:40px}
+
+/* ---------- «Моё устройство» */
+.hero{display:grid;grid-template-columns:260px 1fr;gap:34px;align-items:center;padding:30px 34px}
+.hero .pic{display:grid;place-items:center;background:var(--stage);border-radius:var(--r-l);padding:22px 0;position:relative}
+.hero h2{font-size:30px;font-weight:600;letter-spacing:-.02em;margin:0}
+.hero .sub{color:var(--muted);margin:2px 0 16px}
+.specs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+.spec{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);padding:12px 14px}
+.spec small{display:block;color:var(--muted);font-size:var(--fs-xs)}
+.spec b{font-weight:600;font-size:16px}
+.spec .unk{color:var(--muted);font-style:italic;font-weight:400}
+.mem{margin-top:18px}
+.mem .bar{height:12px;border-radius:99px;background:var(--paper);overflow:hidden;display:flex}
+.mem .bar i{display:block;height:100%}
+.mem .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:var(--fs-xs);color:var(--muted);margin-top:8px}
+.mem .legend span::before{content:"";display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px;background:var(--c)}
+.saved{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.dcard{display:grid;grid-template-columns:46px 1fr;gap:4px 14px;align-items:center;padding:16px;border-radius:var(--r-l);border:1px solid var(--line);background:var(--card);text-align:left}
+.dcard[aria-current]{border-color:var(--olive-3);box-shadow:0 0 0 1px var(--olive-3)}
+.dcard .art{grid-row:span 3}
+.dcard b{font-weight:600}
+.dcard small{color:var(--muted);font-size:var(--fs-xs)}
+
+/* ---------- списки: книги, комиксы */
+.split>*{min-width:0}
+.split{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:18px;align-items:start}
+.list{display:grid}
+.item{display:grid;grid-template-columns:40px 1fr auto;gap:2px 14px;align-items:center;padding:10px 12px;border-radius:var(--r-m);cursor:pointer}
+.item+.item{border-top:1px solid var(--line)}
+.item:hover{background:var(--surface)}
+.item[aria-selected="true"]{background:var(--wash)}
+.item .cov{grid-row:span 2;width:40px;height:56px;border-radius:4px;display:grid;place-items:center;font-size:10px;color:var(--muted);text-align:center;line-height:1.1;overflow:hidden}
+.item b{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item small{color:var(--muted);font-size:var(--fs-xs)}
+.item .tags{grid-row:span 2;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:260px}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.src{display:flex;align-items:center;gap:12px;padding:14px 18px}
+.src svg{width:22px;height:22px;stroke:var(--olive);fill:none;stroke-width:1.7;flex:none}
+.src .path{flex:1;min-width:0}
+.src .path b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.src .path small{color:var(--muted)}
+.hist{position:relative}
+.hist-menu{position:absolute;top:44px;right:0;width:380px;background:var(--card);border:1px solid var(--line);border-radius:var(--r-m);box-shadow:var(--shadow);padding:6px;z-index:20;display:none}
+.hist-menu.open{display:block}
+.hist-menu button{display:block;width:100%;text-align:left;padding:8px 10px;border:0;background:none;border-radius:8px;cursor:pointer}
+.hist-menu button:hover{background:var(--surface)}
+.hist-menu small{color:var(--muted);display:block;font-size:var(--fs-xs)}
+.covers{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.covers button{min-width:0;border:1px solid var(--line);border-radius:8px;padding:0;background:none;cursor:pointer;aspect-ratio:3/4;overflow:hidden}
+.covers button[aria-pressed="true"]{outline:2px solid var(--olive-3);outline-offset:2px}
+.found{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin-top:6px}
+.found label{min-width:0;display:grid;grid-template-columns:18px 1fr;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r-m);font-size:var(--fs-s);cursor:pointer}
+.found label small{display:block;color:var(--muted);font-size:var(--fs-xs)}
+
+/* ---------- комиксы */
+.saving{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.saving .big{font-size:52px;font-weight:600;letter-spacing:-.03em;line-height:1}
+.saving .cap{color:var(--muted)}
+.bars{display:grid;gap:10px;margin:18px 0}
+.bars .b{display:grid;grid-template-columns:62px 1fr 74px;gap:12px;align-items:center;font-size:var(--fs-s)}
+.bars .t{height:16px;border-radius:6px;background:var(--paper);overflow:hidden}
+.bars .t i{display:block;height:100%;border-radius:6px;background:var(--ink-2)}
+.bars .b.after .t i{background:var(--olive-3)}
+.bars b{text-align:right;font-weight:600}
+.modes{display:grid;gap:10px}
+.mode{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:14px 16px;border-radius:var(--r-m);border:1px solid var(--line);background:var(--card);text-align:left;cursor:pointer}
+.mode[aria-pressed="true"]{border-color:var(--olive-3);background:var(--wash)}
+.mode b{font-weight:600}
+.mode .est{font-weight:600;color:var(--olive-2);font-size:var(--fs-s)}
+.mode small{grid-column:1/-1;color:var(--muted);font-size:var(--fs-xs)}
+table.vols{width:100%;border-collapse:collapse;font-size:var(--fs-s)}
+table.vols th{color:var(--muted);font-weight:500;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+table.vols td{padding:10px;border-bottom:1px solid var(--line)}
+table.vols td.n{text-align:right;white-space:nowrap}
+table.vols small{display:block;color:var(--muted);font-size:var(--fs-xs)}
+
+/* ---------- редакторы: обои, иконка сна */
+.editor{display:grid;grid-template-rows:auto 1fr;height:100vh}
+.ebar{display:flex;align-items:center;gap:10px;padding:12px 22px;border-bottom:1px solid var(--line);background:var(--surface)}
+.ebar h1{font-size:var(--fs-l);font-weight:600;margin:0 auto 0 0}
+.ebody{display:grid;grid-template-columns:64px 1fr 320px;min-height:0}
+.tools{display:grid;align-content:start;gap:4px;padding:10px 8px;border-right:1px solid var(--line);background:var(--surface)}
+.tools button{display:grid;justify-items:center;gap:3px;padding:8px 2px;border:0;border-radius:10px;background:none;font-size:11px;color:var(--muted);cursor:pointer}
+.tools button svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.tools button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+.canvas{display:grid;place-items:center;background:var(--stage);position:relative;min-height:0;overflow:hidden}
+.canvas .note{position:absolute;left:16px;bottom:14px;font-size:var(--fs-xs);color:var(--muted)}
+.side{border-left:1px solid var(--line);background:var(--surface);padding:18px;overflow:auto;display:grid;gap:16px;align-content:start}
+.side h3{margin:0;font-size:var(--fs);font-weight:600}
+.slider{display:grid;grid-template-columns:1fr 46px;gap:10px;align-items:center;font-size:var(--fs-s)}
+.slider input{accent-color:var(--olive-3)}
+.status{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:center;padding:14px;border-radius:var(--r-m);background:var(--card);border:1px solid var(--line)}
+.status .ic{grid-row:span 2;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok)}
+.status .ic svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.2}
+.status b{font-weight:600;font-size:var(--fs-s)}
+.status small{color:var(--muted);font-size:var(--fs-xs)}
+.backups{display:grid;gap:6px}
+.backups div{display:flex;align-items:center;gap:10px;font-size:var(--fs-s);padding:8px 10px;border-radius:var(--r-s);background:var(--card);border:1px solid var(--line)}
+.backups div span{flex:1}
+
+/* ---------- каталог работ (выдвижная панель) */
+.drawer-back{position:fixed;inset:0;background:rgba(20,20,18,.36);opacity:0;pointer-events:none;transition:.2s;z-index:40}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(720px,92vw);background:var(--surface);border-left:1px solid var(--line);transform:translateX(100%);transition:.26s cubic-bezier(.2,.8,.2,1);z-index:41;display:grid;grid-template-rows:auto 1fr}
+.drawer.open{transform:none}.drawer-back.open{opacity:1;pointer-events:auto}
+.drawer header{display:flex;align-items:center;gap:12px;padding:18px 22px;border-bottom:1px solid var(--line)}
+.drawer header h2{margin:0 auto 0 0;font-size:var(--fs-l);font-weight:600}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;padding:22px;overflow:auto;align-content:start}
+.work{display:grid;gap:6px;text-align:left;background:none;border:0;padding:0;cursor:pointer}
+.work .th{aspect-ratio:3/4;border-radius:10px;border:1px solid var(--line);overflow:hidden;background:var(--card)}
+.work b{font-weight:500;font-size:var(--fs-s)}
+.work small{color:var(--muted);font-size:var(--fs-xs)}
+
+/* ---------- настройки */
+.settings{display:grid;grid-template-columns:220px 1fr;gap:26px;align-items:start}
+.snav{display:grid;gap:2px;position:sticky;top:20px}
+.snav button{text-align:left;padding:9px 12px;border-radius:10px;border:0;background:none;cursor:pointer;color:var(--ink-2);display:flex;align-items:center;gap:10px}
+.snav button[aria-current]{background:var(--card);box-shadow:var(--shadow);color:var(--ink);font-weight:500}
+.snav .sep{font-size:var(--fs-xs);color:var(--muted);padding:14px 12px 4px}
+.sbody{display:grid;gap:18px;max-width:820px}
+.prow{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}
+.tree{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;line-height:1.55;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);padding:12px 14px;white-space:pre;overflow:auto;margin:0}
+
+/* ---------- окна */
+.modal-back{position:fixed;inset:0;background:rgba(20,20,18,.45);display:none;place-items:center;z-index:60;padding:20px}
+.modal-back.open{display:grid}
+.modal{background:var(--surface);border-radius:20px;border:1px solid var(--line);box-shadow:0 30px 80px -30px rgba(0,0,0,.5);width:min(560px,100%);padding:26px}
+.modal h2{margin:0 0 6px;font-size:22px;font-weight:600;letter-spacing:-.01em}
+.modal .choices{display:grid;gap:10px;margin:18px 0}
+.modal .choices button{display:grid;grid-template-columns:40px 1fr auto;gap:2px 14px;align-items:center;padding:14px;border-radius:var(--r-m);border:1px solid var(--line);background:var(--card);cursor:pointer;text-align:left}
+.modal .choices button:hover{border-color:var(--olive-3)}
+.modal .choices small{color:var(--muted);font-size:var(--fs-xs);grid-column:2/-1}
+.modal .choices button>span:first-child{grid-row:span 2}
+.modal .foot{display:flex;gap:10px;justify-content:flex-end;margin-top:8px}
+.gate{position:absolute;inset:0;display:grid;place-items:center;background:var(--paper);z-index:30;padding:30px}
+.gate .box{text-align:center;max-width:460px;display:grid;gap:12px;justify-items:center}
+.gate h2{font-size:26px;font-weight:600;margin:0}
+.gate p{margin:0;color:var(--muted)}
+.pulse{width:120px;height:120px;border-radius:50%;display:grid;place-items:center;background:var(--wash);animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 18px color-mix(in srgb,var(--olive-3) 0%,transparent),0 0 0 0 transparent;transform:scale(1.03)}0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--olive-3) 30%,transparent)}}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:#1B1B1A;color:#F2F2EA;padding:11px 18px;border-radius:12px;opacity:0;transition:.25s;z-index:80;font-size:var(--fs-s)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- панель прототипа (только для просмотра) */
+.proto{background:#1B1B1A;color:#ECECE6;border-radius:14px;padding:10px;display:grid;gap:6px;font-size:12px;margin:0 0 10px}
+.proto .r{display:flex;gap:6px}.proto .r button{flex:1}
+.proto b{font-weight:600;margin-right:4px}
+.proto select{width:100%}
+.proto select,.proto button{background:#33332F;color:#ECECE6;border:1px solid #4A4A45;border-radius:8px;padding:5px 8px;font-size:12px;cursor:pointer}
+
+/* ---------- план работ */
+.plan{max-width:900px;display:grid;gap:18px}
+.plan h2{font-size:22px;margin:0 0 8px}
+.plan h3{font-size:var(--fs);margin:16px 0 6px}
+.plan ol,.plan ul{margin:6px 0;padding-left:22px;display:grid;gap:5px}
+.plan table{width:100%;border-collapse:collapse;font-size:var(--fs-s)}
+.plan td,.plan th{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.plan th{color:var(--muted);font-weight:500}
+.q{border-left:3px solid var(--olive-3);padding:10px 14px;background:var(--surface);border-radius:0 var(--r-m) var(--r-m) 0}
+@media (max-width:1100px){.split{grid-template-columns:1fr}.hero{grid-template-columns:1fr}.specs{grid-template-columns:1fr 1fr}.settings{grid-template-columns:1fr}.snav{position:static;grid-auto-flow:column;overflow:auto}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="rail">
+    <div class="brand"><svg viewBox="0 0 512 512" aria-hidden="true"><rect x="16" y="16" width="480" height="480" rx="112" fill="#6E6E33"/><rect x="112" y="102" width="288" height="320" rx="22" fill="#F2F2EA"/><g fill="#A3A397"><rect x="146" y="158" width="150" height="16" rx="8"/><rect x="146" y="198" width="126" height="16" rx="8"/><rect x="146" y="238" width="142" height="16" rx="8"/><rect x="146" y="278" width="100" height="16" rx="8"/><rect x="146" y="338" width="140" height="16" rx="8"/></g><path d="M312 78h62v152l-31-30-31 30z" fill="#161615"/><path d="M343 246C343 246 312 290 312 312a31 31 0 0 0 62 0C374 290 343 246 343 246Z" fill="#161615"/></svg>
+      <div><b>InkMaiden</b><span>библиотека и читалка</span></div></div>
+    <button class="cur" id="cur" title="Текущая читалка. Сменить — в Настройках"></button>
+    <nav class="nav" id="nav"></nav>
+    <div class="spacer"></div>
+    <div class="proto" aria-label="Панель прототипа">
+      <b>Прототип: что подключено</b>
+      <select id="scenario">
+        <option value="connected">Color 3 подключена</option>
+        <option value="saved">Ничего, есть сохранённые</option>
+        <option value="none">Первый запуск</option>
+      </select>
+      <div class="r"><button id="themeBtn">Тема</button><button id="planBtn">План работ</button></div>
+    </div>
+    <nav class="nav" id="navFoot"></nav>
+    <div class="ver">Прототип · версия 0.3</div>
+  </aside>
+  <main class="main" id="main"></main>
+</div>
+
+<div class="drawer-back" id="drawerBack"></div>
+<aside class="drawer" id="drawer" aria-label="Мои работы"></aside>
+<div class="modal-back" id="modalBack"><div class="modal" id="modal" role="dialog" aria-modal="true"></div></div>
+<div class="toast" id="toast" role="status"></div>
+
+
+<script>
+/* ===================== данные прототипа */
+const DEV = {
+  c3: { id:'PB743K3', name:'InkPad Color 3', full:'PocketBook InkPad Color 3', code:'743K3', inch:'7,8″', res:'1404×1872', ppi:300, color:true, colorRes:'702×936, 150 ppi', display:'E Ink Kaleido 3',
+        body:'134 × 189,5 × 8 мм', kernel:'4.9', lang:'русский', tz:'Бишкек', updated:'19 ноября 2026', total:29.7, used:{ books:3.1, comics:9.4, manga:4.2, other:1.3 }, theme:'Line',
+        sleep:'своя, поставлена 20 ноября', seen:'сейчас', bodyColor:'#2B3036' },
+  v:  { id:'PB629', name:'Verse', full:'PocketBook Verse', code:'629', inch:'6″', res:'758×1024', ppi:212, color:false, colorRes:null, display:'E Ink Carta',
+        body:'108 × 156 × 7,6 мм', kernel:'3.10', lang:'русский', tz:'Бишкек', updated:'2 ноября 2026', total:7.0, used:{ books:1.4, comics:2.0, manga:1.1, other:.6 }, theme:'Line',
+        sleep:'стандартная', seen:'18 ноября, 21:40', bodyColor:'#2E2E2D' },
+};
+const S = { page:'device', scenario:'connected', selected:'c3', connected:'c3', theme:'light', plan:false,
+  books:{ sel:1, cover:1 }, comics:{ mode:'balanced' }, wall:{ tool:'crop' }, sleep:{ tool:'pic' }, set:'general' };
+
+/* ===================== помощники */
+const $ = s => document.querySelector(s);
+const el = (t, a = {}, ...k) => { const e = document.createElement(t); for (const [n, v] of Object.entries(a)) { if (n === 'html') e.innerHTML = v; else if (n.startsWith('on')) e[n] = v; else if (v === true) e.setAttribute(n, n.startsWith('aria') ? 'true' : ''); else if (v !== false && v != null) e.setAttribute(n, v); }
+  for (const c of k.flat()) if (c != null && c !== false) e.append(c.nodeType ? c : document.createTextNode(c)); return e; };
+const toast = t => { const x = $('#toast'); x.textContent = t; x.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => x.classList.remove('show'), 2600); };
+const I = {
+  device:'<rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M9.5 18h5"/>',
+  books:'<path d="M4 19V5a2 2 0 0 1 2-2h12v15H6a2 2 0 0 0-2 2zm0 0a2 2 0 0 0 2 2h12"/>',
+  comics:'<rect x="3" y="3" width="8" height="10" rx="1.5"/><rect x="13" y="3" width="8" height="6" rx="1.5"/><rect x="13" y="11" width="8" height="10" rx="1.5"/><rect x="3" y="15" width="8" height="6" rx="1.5"/>',
+  wall:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="9.5" r="1.8"/><path d="M4 18l5.5-5.5 3.5 3.5 2.5-2.5L20 18"/>',
+  sleep:'<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>',
+  settings:'<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>',
+  folder:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+  upload:'<path d="M12 16V4M7 9l5-5 5 5M5 20h14"/>', save:'<path d="M12 4v12M7 11l5 5 5-5M5 20h14"/>', gallery:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  undo:'<path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>', check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>', history:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/>',
+  crop:'<path d="M6 2v14a2 2 0 0 0 2 2h14M2 6h14a2 2 0 0 1 2 2v14"/>', filter:'<circle cx="9" cy="9" r="5"/><circle cx="15" cy="15" r="5"/>', adj:'<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>',
+  text:'<path d="M5 6V4h14v2M12 4v16M9 20h6"/>', pen:'<path d="M4 20l4-1 11-11-3-3L5 16z"/>', pos:'<rect x="4" y="4" width="16" height="16" rx="2"/><circle cx="15" cy="15" r="2.5"/>', x:'<path d="M6 6l12 12M18 6L6 18"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>', usb:'<path d="M12 3v14M8 7l4-4 4 4M7 13v2l5 3 5-3v-2"/><circle cx="12" cy="20" r="1.5"/>', eye:'<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+};
+const ic = (n, cls = '') => `<svg viewBox="0 0 24 24" class="${cls}">${I[n]}</svg>`;
+const icn = n => el('span', { html: ic(n) });
+
+// рисунок читалки (корпус по пропорциям модели, экран с картинкой)
+function art(key, h = 200, screen = 'page') {
+  const d = DEV[key], k = key === 'c3' ? [134, 189.5, 119, 158.6, 9] : [108, 156, 91.4, 121.9, 10];
+  const s = h / k[1], W = k[0] * s, sx = (k[0] - k[2]) / 2 * s, sy = k[4] * s, sw = k[2] * s, sh = k[3] * s;
+  const scr = screen === 'sleep'
+    ? `<rect x="${sx}" y="${sy}" width="${sw}" height="${sh}" fill="#E9E8E2"/><g transform="translate(${sx + sw * .14} ${sy + sh * .6}) scale(${sw / 110})" fill="#fff" stroke="#222" stroke-width="2.2" stroke-linejoin="round"><path d="M6 34c-2-14 12-24 30-24s30 8 30 20c0 6-4 9-10 9H12c-4 0-6-2-6-5z"/><path d="M58 22c8-4 16 0 14 8-1 5-7 6-10 4" fill="none"/><circle cx="18" cy="24" r="12"/><path d="M9 15l2-9 6 6M21 12l5-7 3 9"/><path d="M13 25q3 2 6 0" fill="none"/><text x="2" y="-4" font-size="11" fill="#222" stroke="none" font-family="Onest,sans-serif">z</text><text x="12" y="-14" font-size="8" fill="#222" stroke="none" font-family="Onest,sans-serif">z</text></g>`
+    : screen === 'wall'
+      ? `<defs><linearGradient id="g${key}${h}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7E8C9A"/><stop offset=".55" stop-color="#C9C3B5"/><stop offset=".56" stop-color="#5D655F"/><stop offset="1" stop-color="#3C413E"/></linearGradient></defs><rect x="${sx}" y="${sy}" width="${sw}" height="${sh}" fill="url(#g${key}${h})"${d.color ? '' : ' style="filter:grayscale(1)"'}/><path d="M${sx} ${sy + sh * .56} l${sw * .25} ${-sh * .14} l${sw * .18} ${sh * .08} l${sw * .22} ${-sh * .17} l${sw * .35} ${sh * .23}z" fill="#3B4340"/>`
+      : `<rect x="${sx}" y="${sy}" width="${sw}" height="${sh}" fill="#E9E8E2"/>` + Array.from({ length: 9 }, (_, i) => `<rect x="${sx + sw * .12}" y="${sy + sh * (.12 + i * .085)}" width="${sw * (i % 3 === 2 ? .5 : .76)}" height="${Math.max(1.5, sh * .022)}" rx="1" fill="#B9B8B0"/>`).join('');
+  return `<svg class="reader-art" width="${W}" height="${h}" viewBox="0 0 ${W} ${h}"><rect width="${W}" height="${h}" rx="${8 * s}" fill="${d.bodyColor}"/>${scr}<rect x="${W * .28}" y="${h - 6 * s}" width="${W * .44}" height="${1.6 * s}" rx="${.8 * s}" fill="#4A4F55"/></svg>`;
+}
+const artEl = (k, h, scr) => el('span', { html: art(k, h, scr) });
+
+/* ===================== оболочка */
+const SECTIONS = [
+  { id:'device', title:'Моё устройство', icon:'device' },
+  { id:'books', title:'Книги', icon:'books' },
+  { id:'comics', title:'Комиксы', icon:'comics' },
+  { id:'wall', title:'Обои', icon:'wall' },
+  { id:'sleep', title:'Иконка сна', icon:'sleep' },
+];
+function shell() {
+  const navBtn = s => el('button', { 'aria-current': S.page === s.id && !S.plan ? 'page' : false, onclick: () => go(s.id) }, icn(s.icon), el('b', {}, s.title));
+  $('#nav').replaceChildren(...SECTIONS.map(navBtn));
+  $('#navFoot').replaceChildren(navBtn({ id:'settings', title:'Настройки', icon:'settings' }));
+  const c = $('#cur');
+  if (!S.selected) { c.replaceChildren(el('span', { class:'mini', html: ic('usb') }), el('b', {}, 'Читалка не выбрана'), el('small', {}, 'подключите по USB')); return; }
+  const d = DEV[S.selected];
+  c.replaceChildren(el('span', { class:'mini', html: art(S.selected, 40) }), el('b', {}, d.name),
+    el('small', {}, el('i', { class: 'dot' + (S.connected === S.selected ? ' on' : '') }), S.connected === S.selected ? `подключена · F:\\` : 'не подключена'));
+  c.onclick = () => go('device');
+}
+function go(id) { S.page = id; S.plan = false; render(); $('#main').scrollTop = 0; }
+function render() {
+  document.documentElement.dataset.theme = S.theme;
+  shell();
+  const m = $('#main'); m.replaceChildren();
+  if (S.plan) return m.append(planPage());
+  if (!S.selected && S.page !== 'settings') return m.append(gate());
+  ({ device, books, comics, wall, sleep, settings })[S.page](m);
+}
+
+/* ===================== требуем читалку */
+function gate() {
+  return el('div', { class:'gate' }, el('div', { class:'box' },
+    el('div', { class:'pulse', html: ic('usb').replace('<svg', '<svg width="54" height="54" style="stroke:var(--olive);fill:none;stroke-width:1.6"') }),
+    el('h2', {}, 'Подключите читалку'),
+    el('p', {}, 'Подключите PocketBook по USB и выберите на ней «Связь с ПК». InkMaiden сама узнает модель, сохранит её и будет использовать во всех разделах.'),
+    el('button', { class:'btn quiet', onclick: () => { S.connected = 'c3'; S.selected = 'c3'; S.scenario = 'connected'; $('#scenario').value = 'connected'; toast('Найдена InkPad Color 3 — сохранена в Readers\\PB743K3.json'); render(); } }, 'Показать, что будет после подключения')));
+}
+
+/* ===================== Моё устройство */
+function device(m) {
+  const d = DEV[S.selected], on = S.connected === S.selected;
+  const used = Object.values(d.used).reduce((a, b) => a + b, 0), free = d.total - used;
+  const spec = (k, v, unk) => el('div', { class:'spec' }, el('small', {}, k), unk ? el('b', { class:'unk' }, v) : el('b', {}, v));
+  const memBar = el('div', { class:'bar' }, ...[['books', 'var(--olive-3)'], ['comics', 'var(--ink-2)'], ['manga', '#9A9A8E'], ['other', 'var(--line-2)']].map(([k, c]) => el('i', { style: `width:${d.used[k] / d.total * 100}%;background:${c}` })));
+  m.append(el('div', { class:'page' },
+    el('div', { class:'head' }, el('div', { class:'grow' }, el('h1', {}, 'Моё устройство'), el('p', {}, on ? 'Читалка подключена — сведения прочитаны с неё только что.' : `Читалка не подключена. Сведения — с последнего подключения: ${d.seen}.`))),
+    el('section', { class:'panel hero' },
+      el('div', { class:'pic' }, artEl(S.selected, 250, 'sleep')),
+      el('div', {},
+        el('div', { class:'row', style:'gap:8px;margin-bottom:8px' }, on ? el('span', { class:'chip ok' }, '● Подключена · диск F:\\') : el('span', { class:'chip mute' }, 'Не подключена'), el('span', { class:'chip' }, '✓ Модель определена по читалке')),
+        el('h2', {}, d.full), el('div', { class:'sub' }, `Код модели PB${d.code} · экран ${d.display}`),
+        el('div', { class:'mem' }, el('div', { class:'row', style:'justify-content:space-between;margin-bottom:8px;font-size:var(--fs-s)' }, el('b', {}, `Свободно ${free.toFixed(1).replace('.', ',')} ГБ из ${d.total.toFixed(1).replace('.', ',')} ГБ`), el('span', { style:'color:var(--muted)' }, `${Math.round(used / d.total * 100)} % занято`)), memBar,
+          el('div', { class:'legend' }, el('span', { style:'--c:var(--olive-3)' }, `Книги ${d.used.books} ГБ`), el('span', { style:'--c:var(--ink-2)' }, `Комиксы ${d.used.comics} ГБ`), el('span', { style:'--c:#9A9A8E' }, `Манга ${d.used.manga} ГБ`), el('span', { style:'--c:var(--line-2)' }, `Прочее ${d.used.other} ГБ`))),
+        el('div', { class:'specs' },
+          spec('Экран', `${d.inch} · ${d.res} · ${d.ppi} ppi`), spec('Цвет', d.color ? `Kaleido 3 · ${d.colorRes}` : '16 оттенков серого'), spec('Корпус', d.body),
+          spec('Версия прошивки', 'не видна по USB', true), spec('Прошивка обновлена', d.updated), spec('Ядро Linux', d.kernel),
+          spec('Язык и пояс', `${d.lang}, ${d.tz}`), spec('Иконка сна', d.sleep), spec('Процессор, память, батарея', 'не видны по USB', true)))),
+    el('div', { class:'head', style:'margin-top:34px;margin-bottom:14px' }, el('div', { class:'grow' }, el('h2', { style:'font-size:var(--fs-l);margin:0' }, 'Сохранённые устройства'), el('p', {}, 'Каждая подключённая читалка сохраняется сама — файл в папке Readers рядом с программой. Сменить текущую — в «Настройках».'))),
+    el('div', { class:'saved' }, ...Object.keys(DEV).map(k => el('button', { class:'dcard', 'aria-current': k === S.selected ? 'true' : false, onclick: () => { S.page = 'settings'; S.set = 'dev-' + k; render(); } },
+      el('span', { class:'art', html: art(k, 62) }), el('b', {}, DEV[k].name), el('small', {}, `PB${DEV[k].code} · ${DEV[k].inch} · ${DEV[k].color ? 'цвет' : 'ч/б'}`),
+      el('small', {}, k === S.connected ? el('span', { class:'chip ok' }, 'подключена') : `последний раз: ${DEV[k].seen}`))))));
+}
+
+/* ===================== Книги */
+const BOOKS = [
+  { t:'Тихий берег', a:'А. Лесная', f:'EPUB', tags:[['warn', 'реклама: 3 стр.'], ['', 'обложка есть']], col:'#5B6B57' },
+  { t:'Город после полуночи', a:'М. Ветров', f:'FB2', tags:[['warn', 'нет обложки'], ['warn', 'реклама: 1 стр.']], col:null },
+  { t:'Заметки о море', a:'И. Серов', f:'TXT', tags:[['', 'TXT → FB2'], ['warn', 'нет обложки']], col:null },
+  { t:'Архив северных писем', a:'Е. Кравец', f:'EPUB', tags:[['ok', 'всё в порядке']], col:'#7A5E46' },
+  { t:'Шестой маяк', a:'Д. Орлова', f:'FB2', tags:[['warn', 'ссылки: 14']], col:'#3E4F66' },
+  { t:'Как устроены часы', a:'П. Ли', f:'EPUB', tags:[['warn', 'реклама: 4 стр.'], ['warn', 'нет обложки']], col:null },
+];
+const coverSvg = (b, style = 0) => {
+  const bg = b.col || ['#55552A', '#1B1B1A', '#E9E9D6', '#6E6E33'][style % 4], fg = style === 2 && !b.col ? '#1B1B1A' : '#F2F2EA';
+  return `<svg viewBox="0 0 60 84" width="100%" height="100%"><rect width="60" height="84" fill="${bg}"/>${b.col ? '' : `<rect x="6" y="6" width="48" height="72" fill="none" stroke="${fg}" stroke-opacity=".35"/>`}<text x="30" y="40" fill="${fg}" font-size="6.2" text-anchor="middle" font-family="Onest,sans-serif" font-weight="600">${b.t.split(' ').slice(0, 2).join(' ')}</text><text x="30" y="49" fill="${fg}" font-size="6.2" text-anchor="middle" font-family="Onest,sans-serif" font-weight="600">${b.t.split(' ').slice(2).join(' ')}</text><text x="30" y="70" fill="${fg}" fill-opacity=".75" font-size="4.6" text-anchor="middle" font-family="Onest,sans-serif">${b.a}</text></svg>`;
+};
+function srcBar(label, path, info) {
+  const menu = el('div', { class:'hist-menu' }, ...['D:\\Книги', 'D:\\Загрузки\\Книги с ЛитРес', 'E:\\Архив\\Классика'].map((p, i) => el('button', { onclick: () => { menu.classList.remove('open'); toast(`Источник: ${p}`); } }, p, el('small', {}, ['вчера · 248 книг', '15 ноября · 31 книга', '3 ноября · 92 книги'][i]))));
+  return el('section', { class:'panel src' }, el('span', { html: ic('folder') }),
+    el('div', { class:'path' }, el('b', {}, path), el('small', {}, info)),
+    el('div', { class:'hist' }, el('button', { class:'btn', onclick: e => { e.stopPropagation(); menu.classList.toggle('open'); } }, icn('history'), 'Недавние'), menu),
+    el('button', { class:'btn' }, 'Другая папка…'));
+}
+function devChip() { const d = DEV[S.selected]; return el('span', { class:'chip', title:'Сменить — в Настройках' }, `Для ${d.name} · ${d.res}${d.color ? ' · цвет' : ''}`); }
+function books(m) {
+  const b = BOOKS[S.books.sel];
+  m.append(el('div', { class:'page' },
+    el('div', { class:'head' }, el('div', { class:'grow' }, el('h1', {}, 'Книги'), el('p', {}, 'Обложки, чистка рекламы и TXT → FB2. Каждую книгу можно настроить отдельно, остальные обработаются по общим правилам.')), devChip()),
+    srcBar('Книги', 'D:\\Книги', '248 книг · 412 МБ · общая папка-источник из Настроек'),
+    el('div', { class:'toolbar', style:'margin-top:18px' },
+      el('div', { class:'seg' }, ...['Все · 248', 'Нужна обложка · 37', 'Реклама · 21', 'TXT · 6'].map((t, i) => el('button', { 'aria-pressed': i === 0 ? 'true' : 'false' }, t))),
+      el('span', { style:'flex:1' }),
+      el('label', { class:'check' }, el('input', { type:'checkbox', class:'toggle', checked:true }), 'Обложки'), el('label', { class:'check' }, el('input', { type:'checkbox', class:'toggle', checked:true }), 'Реклама'), el('label', { class:'check' }, el('input', { type:'checkbox', class:'toggle', checked:true }), 'TXT → FB2')),
+    el('div', { class:'split' },
+      el('section', { class:'panel', style:'padding:8px' }, el('div', { class:'list' }, ...BOOKS.map((x, i) => el('div', { class:'item', 'aria-selected': i === S.books.sel ? 'true' : 'false', onclick: () => { S.books.sel = i; render(); } },
+        el('div', { class:'cov', html: x.col ? coverSvg(x) : (x.f === 'TXT' ? 'TXT' : 'нет<br>обложки'), style: x.col ? '' : 'border:1px dashed var(--line-2)' }),
+        el('b', {}, x.t), el('div', { class:'tags' }, ...x.tags.map(([c, t]) => el('span', { class:'chip ' + c }, t))), el('small', {}, `${x.a} · ${x.f}`))))),
+      el('section', { class:'panel stack', style:'gap:16px' },
+        el('div', {}, el('h2', {}, b.t), el('p', { class:'hint', style:'margin:0' }, `${b.a} · ${b.f} · настройки только для этой книги`)),
+        el('div', { class:'field' }, el('span', {}, 'Обложка'), el('div', { class:'covers' }, ...[0, 1, 2, 3].map(i => el('button', { 'aria-pressed': S.books.cover === i ? 'true' : 'false', html: coverSvg(Object.assign({}, b, { col:null }), i), onclick: () => { S.books.cover = i; render(); } }))),
+          el('small', {}, 'Стиль подбирается по жанру. Можно взять свою картинку.')),
+        el('div', { class:'field' }, el('span', {}, 'Найдено: реклама'), el('div', { class:'found' },
+          el('label', {}, el('input', { type:'checkbox', checked:true }), el('div', {}, 'Страница 1 — «Купите полную версию на сайте…»', el('small', {}, 'страница целиком · 412 знаков'))),
+          el('label', {}, el('input', { type:'checkbox' }), el('div', {}, 'Страница 2 — © и ISBN издательства', el('small', {}, 'служебная · по умолчанию остаётся'))))),
+        el('label', { class:'check' }, el('input', { type:'checkbox', class:'toggle', checked:true }), 'Внешние ссылки превратить в текст'),
+        el('div', { class:'row', style:'flex-wrap:wrap' }, el('button', { class:'btn' }, icn('eye'), 'Посмотреть на читалке'), el('button', { class:'btn quiet' }, 'Как у остальных')))),
+    el('div', { class:'actions' }, el('div', { class:'where' }, 'Готовое: ', el('b', {}, 'InkMaiden\\PB743K3\\Books'), ' · на читалке: ', el('b', {}, 'Books')),
+      el('button', { class:'btn', onclick: () => toast('Сохранено в InkMaiden\\PB743K3\\Books: 248 книг') }, icn('save'), 'Сохранить в папку'),
+      el('button', { class:'btn primary', disabled: S.connected !== S.selected, onclick: () => toast('Загружаю на InkPad Color 3 → F:\\Books…') }, icn('upload'), 'Загрузить на читалку'))));
+}
+
+/* ===================== Комиксы */
+function comics(m) {
+  const modes = [['safe', 'Бережно', 'почти как исходник', '1,5 МБ · −42 %'], ['balanced', 'Сбалансированно', 'подходит почти всем', '1,1 МБ · −58 %'], ['max', 'Максимум места', 'для больших библиотек', '0,7 МБ · −73 %']];
+  m.append(el('div', { class:'page' },
+    el('div', { class:'head' }, el('div', { class:'grow' }, el('h1', {}, 'Комиксы'), el('p', {}, 'CBZ, CBR, CB7, ZIP, RAR и 7Z → аккуратный CBZ под экран читалки: понятные названия, страницы по порядку, меньше веса.')), devChip()),
+    srcBar('Комиксы', 'D:\\Манга', '4 тома · 29 МБ · у 3 поменяется название'),
+    el('div', { class:'split', style:'margin-top:18px;grid-template-columns:400px 1fr' },
+      el('div', { class:'stack' },
+        el('section', { class:'panel' }, el('h2', {}, 'Насколько сжимать'), el('p', { class:'hint' }, 'Вес выбранного тома в каждом режиме'),
+          el('div', { class:'modes' }, ...modes.map(([id, n, note, est]) => el('button', { class:'mode', 'aria-pressed': S.comics.mode === id ? 'true' : 'false', onclick: () => { S.comics.mode = id; render(); } },
+            el('b', {}, n), el('span', { class:'est' }, est), el('small', {}, note))))),
+        el('section', { class:'panel' }, el('h2', {}, 'Тонкая настройка'), el('p', { class:'hint', style:'margin:0' }, 'Высота страницы, качество, серый для ч/б томов, цветные вклейки, обрезка полей, резкость, цветокор для цветных экранов — свёрнуто, как сейчас.'))),
+      el('div', { class:'stack' },
+        el('section', { class:'panel' },
+          el('div', { class:'saving' }, el('div', { class:'big' }, '−23 МБ'), el('div', { class:'cap' }, 'освободится')),
+          el('div', { class:'bars' }, el('div', { class:'b' }, el('span', {}, 'Сейчас'), el('div', { class:'t' }, el('i', { style:'width:100%' })), el('b', {}, '29 МБ')), el('div', { class:'b after' }, el('span', {}, 'Станет'), el('div', { class:'t' }, el('i', { style:'width:21%' })), el('b', {}, '6,1 МБ'))),
+          el('button', { class:'btn' }, icn('eye'), 'Посмотреть на читалке')),
+        el('section', { class:'panel' }, el('h2', {}, 'Тома'),
+          el('table', { class:'vols' }, el('thead', {}, el('tr', {}, el('th', {}, 'Название'), el('th', {}, 'Сейчас'), el('th', {}, 'Станет'))),
+            el('tbody', {}, ...[['Hero 001.cbz', 'Комиксы', '2,6 МБ', '≈ 1,1 МБ'], ['Ночной город, том 1.cbz', 'было: Nochnoy_gorod_v01_[scan].cbz', '12 МБ', '≈ 2,3 МБ'], ['Ночной город, том 2.cbz', 'было: Nochnoy_gorod_v02_[scan].cbz', '7,2 МБ', '≈ 1,3 МБ'], ['Ночной город, том 3.cbz', 'было: Nochnoy_gorod_v03_[scan].cbz', '7,1 МБ', '≈ 1,4 МБ']]
+              .map(r => el('tr', {}, el('td', {}, r[0], el('small', {}, r[1])), el('td', { class:'n' }, r[2]), el('td', { class:'n' }, r[3])))))))),
+    el('div', { class:'actions' }, el('div', { class:'where' }, 'Готовое: ', el('b', {}, 'InkMaiden\\PB743K3\\Manga'), ' · на читалке: ', el('b', {}, 'Манга')),
+      el('button', { class:'btn' }, 'Только переименовать'), el('button', { class:'btn' }, 'Изменить на месте'),
+      el('button', { class:'btn', onclick: () => toast('Сохранено в InkMaiden\\PB743K3\\Manga') }, icn('save'), 'Сохранить в папку'),
+      el('button', { class:'btn primary', disabled: S.connected !== S.selected, onclick: () => toast('Загружаю на InkPad Color 3 → F:\\Манга…') }, icn('upload'), 'Загрузить на читалку'))));
+}
+
+/* ===================== Редакторы */
+function editor(m, title, tools, key, canvas, side, extra) {
+  m.append(el('div', { class:'editor' },
+    el('div', { class:'ebar' }, el('h1', {}, title), devChip(),
+      el('button', { class:'btn', onclick: () => works(title) }, icn('gallery'), 'Мои работы'),
+      el('button', { class:'btn' }, icn('folder'), 'Открыть картинку'), ...extra),
+    el('div', { class:'ebody' },
+      el('div', { class:'tools' }, ...tools.map(([id, n, icon]) => el('button', { 'aria-pressed': S[key].tool === id ? 'true' : 'false', onclick: () => { S[key].tool = id; render(); } }, icn(icon), n))),
+      el('div', { class:'canvas' }, canvas, el('div', { class:'note' }, 'Предпросмотр приближённый: монитор не передаёт e-ink точно')),
+      el('div', { class:'side' }, ...side))));
+}
+function wall(m) {
+  const d = DEV[S.selected];
+  editor(m, 'Обои', [['crop', 'Кадр', 'crop'], ['filter', 'Фильтры', 'filter'], ['adj', 'Коррекция', 'adj'], ['text', 'Текст', 'text']], 'wall',
+    artEl(S.selected, Math.min(560, innerHeight - 170), 'wall'),
+    [el('h3', {}, 'Кадр'), el('p', { class:'hint', style:'margin:0' }, `Картинка подгоняется под экран ${d.res}. Перетаскивайте её, масштаб — колесом.`),
+     el('div', { class:'slider' }, el('input', { type:'range', value:40 }), el('span', {}, '140 %')),
+     el('div', { class:'row' }, el('button', { class:'btn' }, 'Заполнить'), el('button', { class:'btn' }, 'Вписать')),
+     el('h3', {}, 'Фон, если картинка меньше'), el('div', { class:'seg' }, ...['Белый', 'Чёрный', 'Размытый'].map((t, i) => el('button', { 'aria-pressed': i === 2 ? 'true' : 'false' }, t))),
+     el('h3', {}, 'Экран'), el('label', { class:'check' }, el('input', { type:'checkbox', class:'toggle', checked:true }), 'Имитация e-ink'),
+     el('p', { class:'hint', style:'margin:0' }, d.color ? 'Kaleido 3: цвета станут мягче, вот так они и будут выглядеть.' : 'Verse показывает 16 оттенков серого.')],
+    [el('button', { class:'btn', onclick: () => toast(`Сохранено: InkMaiden\\PB${d.code}\\Wallpapers\\закат.bmp + проект`) }, icn('save'), 'Сохранить'),
+     el('button', { class:'btn primary', disabled: S.connected !== S.selected, onclick: () => toast('На читалке: F:\\system\\logo\\offlogo\\закат.bmp') }, icn('upload'), 'На читалку')]);
+}
+function sleep(m) {
+  const d = DEV[S.selected], on = S.connected === S.selected;
+  editor(m, 'Иконка сна', [['pic', 'Картинка', 'wall'], ['edit', 'Правка', 'pen'], ['pos', 'Место', 'pos']], 'sleep',
+    el('div', { class:'row', style:'gap:40px' }, artEl(S.selected, Math.min(540, innerHeight - 170), 'sleep')),
+    [el('div', { class:'status' }, el('span', { class:'ic', html: ic('check') }),
+        el('b', {}, on ? 'Стоит на читалке' : 'Поставится при подключении'),
+        el('small', {}, on ? `Поставлена сегодня в 14:02 · ${d.name}, тема ${d.theme}` : `Изменения сохранены. Как только ${d.name} подключится — иконка встанет сама, прежняя уйдёт в резервную копию.`)),
+     el('p', { class:'hint', style:'margin:0' }, 'Каждое сохранение сразу ставится на подключённую читалку — нажимать «Записать» не нужно. Прежняя иконка перед заменой копируется в резерв.'),
+     el('h3', {}, 'Обработка'), el('div', { class:'slider' }, el('span', {}, 'Порог линий'), el('span', {}, '140')), el('input', { type:'range', value:55, style:'accent-color:var(--olive-3)' }),
+     el('label', { class:'check' }, el('input', { type:'checkbox', class:'toggle', checked:true }), 'Заливать рисунок внутри белым'),
+     el('h3', {}, 'Резервные копии на читалке'),
+     el('div', { class:'backups' }, ...[['сегодня, 14:02', 'перед этой'], ['20 ноября, 22:15', ''], ['исходная от PocketBook', 'заводская']].map(([t, n]) => el('div', {}, el('span', {}, t, n ? el('small', { style:'color:var(--muted);margin-left:6px' }, n) : null),
+       el('button', { class:'btn quiet', style:'height:30px;padding:0 8px', onclick: () => modal('Вернуть прежнюю иконку?', `На ${d.name} встанет иконка от «${t}». Текущая тоже сохранится в резерв — её можно будет вернуть.`, 'Вернуть', () => toast('Вернул прежнюю иконку на читалку')) }, icn('undo'), 'Вернуть'))))],
+    [el('button', { class:'btn', onclick: () => toast(`Сохранено: InkMaiden\\PB${d.code}\\Sleep_icons\\котик.bmp + проект`) }, icn('save'), 'Сохранить копию в папку')]);
+}
+function works(title) {
+  const dr = $('#drawer'), back = $('#drawerBack');
+  const items = title === 'Обои' ? ['Закат над озером', 'Северное сияние', 'Карта города', 'Горы, тушь', 'Старая гравюра', 'Абстракция'] : ['Спящий кот', 'Луна и звёзды', 'Сова', 'Лис в клубке'];
+  dr.replaceChildren(el('header', {}, el('h2', {}, `Мои работы · ${title.toLowerCase()}`), el('span', { class:'chip' }, `InkMaiden\\PB${DEV[S.selected].code}\\${title === 'Обои' ? 'Wallpapers' : 'Sleep_icons'}`),
+      el('button', { class:'btn quiet', 'aria-label':'Закрыть', onclick: close, html: ic('x') })),
+    el('div', { class:'gallery' }, ...items.map((n, i) => el('button', { class:'work', onclick: () => { close(); toast(`«${n}» открыта для правки`); } },
+      el('div', { class:'th', html: art(S.selected, 200, title === 'Обои' ? 'wall' : 'sleep').replace('<svg', '<svg style="width:100%;height:100%" preserveAspectRatio="xMidYMid slice"') }),
+      el('b', {}, n), el('small', {}, `${['сегодня', 'вчера', '18 ноября', '12 ноября', '3 ноября', '28 октября'][i]} · открыть, на читалку`)))));
+  function close() { dr.classList.remove('open'); back.classList.remove('open'); }
+  back.onclick = close; requestAnimationFrame(() => { dr.classList.add('open'); back.classList.add('open'); });
+}
+
+/* ===================== Настройки */
+function settings(m) {
+  const tabs = [['general', 'Общие'], ['paths', 'Папки и история'], ['data', 'Данные и сброс']];
+  const body = el('div', { class:'sbody' });
+  const nav = el('nav', { class:'snav' }, ...tabs.map(([id, t]) => el('button', { 'aria-current': S.set === id ? 'true' : false, onclick: () => { S.set = id; render(); } }, t)),
+    el('div', { class:'sep' }, 'Читалки'), ...Object.keys(DEV).map(k => el('button', { 'aria-current': S.set === 'dev-' + k ? 'true' : false, onclick: () => { S.set = 'dev-' + k; render(); } },
+      el('span', { html: art(k, 26) }), DEV[k].name, k === S.selected ? el('span', { class:'chip', style:'margin-left:auto' }, 'текущая') : null)));
+  const folder = (label, val, hint, btn = true) => el('div', { class:'field' }, el('span', {}, label), el('div', { class:'prow' }, el('input', { class:'input', value: val }), btn ? el('button', { class:'btn' }, 'Выбрать…') : el('span')), hint ? el('small', {}, hint) : null);
+  if (S.set === 'general') body.append(
+    el('section', { class:'panel' }, el('h2', {}, 'Тема'), el('div', { class:'seg', style:'margin-top:10px' }, ...[['light', 'Светлая'], ['dark', 'Тёмная'], ['auto', 'Как в Windows']].map(([v, t]) => el('button', { 'aria-pressed': S.theme === v || (v === 'auto' && false) ? 'true' : 'false', onclick: () => { S.theme = v === 'auto' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : v; render(); } }, t)))),
+    el('section', { class:'panel' }, el('h2', {}, 'Текущая читалка'), el('p', { class:'hint' }, 'Используется во всех разделах. Подключённая читалка выбирается сама; здесь — если подключено несколько или нужно работать без подключения.'),
+      el('div', { class:'saved' }, ...Object.keys(DEV).map(k => el('button', { class:'dcard', 'aria-current': k === S.selected ? 'true' : false, onclick: () => { S.selected = k; toast(`Текущая читалка: ${DEV[k].name}`); render(); } },
+        el('span', { class:'art', html: art(k, 56) }), el('b', {}, DEV[k].name), el('small', {}, `PB${DEV[k].code}`), el('small', {}, k === S.connected ? 'подключена' : 'не подключена'))))),
+    el('section', { class:'panel' }, el('h2', {}, 'Поведение'),
+      el('div', { class:'stack', style:'gap:12px;margin-top:10px' },
+        el('label', { class:'check' }, el('input', { type:'checkbox', class:'toggle', checked:true }), 'Новую читалку сохранять сама, без вопросов'),
+        el('label', { class:'check' }, el('input', { type:'checkbox', class:'toggle', checked:true }), 'Ставить иконку сна сразу после сохранения'),
+        el('label', { class:'check' }, el('input', { type:'checkbox', class:'toggle', checked:true }), 'Перед заменой файлов на читалке делать резервную копию'))));
+  if (S.set === 'paths') body.append(
+    el('section', { class:'panel stack', style:'gap:14px' }, el('h2', {}, 'Общие папки-источники'), el('p', { class:'hint', style:'margin:0' }, 'Откуда брать книги, комиксы и мангу — для всех читалок.'),
+      folder('Книги', 'D:\\Книги'), folder('Комиксы', 'D:\\Комиксы'), folder('Манга', 'D:\\Манга')),
+    el('section', { class:'panel' }, el('h2', {}, 'История папок'), el('p', { class:'hint' }, 'Все папки, которые вы открывали. Их можно выбрать в разделах кнопкой «Недавние».'),
+      el('div', { class:'backups' }, ...[['D:\\Книги', 'книги · вчера'], ['D:\\Загрузки\\Книги с ЛитРес', 'книги · 15 ноября'], ['D:\\Манга', 'манга · сегодня'], ['E:\\Архив\\Классика', 'книги · 3 ноября']].map(([p, n]) => el('div', {}, el('span', {}, p, el('small', { style:'color:var(--muted);margin-left:8px' }, n)), el('button', { class:'btn quiet', style:'height:30px', html: ic('x') })))),
+      el('button', { class:'btn quiet', style:'margin-top:10px' }, 'Очистить историю')),
+    el('section', { class:'panel' }, el('h2', {}, 'Как лежат файлы'), el('p', { class:'hint' }, 'Всё — рядом с программой. Папки каждой читалки меняются в её разделе слева.'),
+      el('pre', { class:'tree' }, 'InkMaiden\\\n├─ InkMaiden.exe\n├─ Config.json          общие настройки, история папок\n├─ Readers\\\n│  ├─ PB743K3.json      профиль, пути, сведения с читалки\n│  └─ PB629.json\n├─ PB743K3\\\n│  ├─ Books\\  Comics\\  Manga\\\n│  ├─ Wallpapers\\       обои + проекты для правки\n│  └─ Sleep_icons\\      иконки + проекты\n└─ PB629\\ …')));
+  if (S.set === 'data') body.append(
+    el('section', { class:'panel' }, el('h2', {}, 'Папка программы'), el('p', { class:'hint' }, 'Настройки, профили читалок и готовые файлы лежат рядом с InkMaiden.exe — программу можно носить на флешке.'), el('div', { class:'row' }, el('span', { class:'code' }, 'D:\\Программы\\InkMaiden'), el('button', { class:'btn' }, icn('folder'), 'Открыть'))),
+    el('section', { class:'panel' }, el('h2', {}, 'Сброс'), el('p', { class:'hint' }, 'Готовые книги, комиксы и обои не удаляются ни одной из кнопок.'),
+      el('div', { class:'row', style:'flex-wrap:wrap' },
+        el('button', { class:'btn danger', onclick: () => modal('Сбросить настройки?', 'Config.json удалится: тема, папки-источники и история вернутся к исходным. Профили читалок останутся.', 'Сбросить', () => toast('Настройки сброшены')) }, 'Сбросить настройки'),
+        el('button', { class:'btn danger', onclick: () => modal('Забыть все читалки?', 'Удалится папка Readers с профилями. Готовые файлы в папках PB743K3, PB629 останутся. При подключении читалка сохранится снова.', 'Забыть', () => toast('Профили читалок удалены')) }, 'Забыть все читалки'),
+        el('button', { class:'btn danger', onclick: () => modal('Удалить всё, что создала программа?', 'Удалятся Config.json и папка Readers — как после первой установки. Готовые файлы останутся.', 'Удалить', () => toast('Конфигурация удалена')) }, 'Удалить все файлы настроек'))));
+  if (S.set.startsWith('dev-')) { const k = S.set.slice(4), d = DEV[k]; body.append(
+    el('section', { class:'panel', style:'display:grid;grid-template-columns:auto 1fr auto;gap:20px;align-items:center' }, artEl(k, 90), el('div', {}, el('h2', {}, d.name), el('p', { class:'hint', style:'margin:0' }, `${d.full} · PB${d.code} · файл Readers\\PB${d.code}.json`)),
+      k === S.selected ? el('span', { class:'chip' }, 'текущая') : el('button', { class:'btn primary', onclick: () => { S.selected = k; render(); toast(`Текущая читалка: ${d.name}`); } }, 'Сделать текущей')),
+    el('section', { class:'panel stack', style:'gap:14px' }, el('h2', {}, 'Название'), el('input', { class:'input', value: d.name })),
+    el('section', { class:'panel stack', style:'gap:14px' }, el('h2', {}, 'Куда сохранять на компьютере'), el('p', { class:'hint', style:'margin:0' }, `По умолчанию — папка PB${d.code} рядом с программой.`),
+      ...[['Книги', 'Books'], ['Комиксы', 'Comics'], ['Манга', 'Manga'], ['Обои', 'Wallpapers'], ['Иконки сна', 'Sleep_icons']].map(([n, f]) => folder(n, `InkMaiden\\PB${d.code}\\${f}`))),
+    el('section', { class:'panel stack', style:'gap:14px' }, el('h2', {}, 'Куда загружать на читалке'), el('p', { class:'hint', style:'margin:0' }, 'Пути от корня читалки.'),
+      folder('Книги', 'Books', '', false), folder('Комиксы', 'Комиксы', '', false), folder('Манга', 'Манга', '', false), folder('Обои', 'system/logo/offlogo', 'Отсюда прошивка берёт заставки выключения.', false),
+      el('div', { class:'field' }, el('span', {}, 'Иконка сна'), el('small', {}, `Всегда system/resources/${d.theme} — туда, где её ищет прошивка.`))),
+    el('section', { class:'panel' }, el('h2', {}, 'Профиль для предпросмотра'), el('p', { class:'hint' }, 'Из справочника по коду модели. Можно поправить, если читалка нарисована неточно.'),
+      el('dl', { class:'kv' }, el('dt', {}, 'Экран'), el('dd', {}, `${d.inch}, ${d.res}, ${d.ppi} ppi`), el('dt', {}, 'Корпус'), el('dd', {}, d.body), el('dt', {}, 'Версия прошивки'), el('dd', { class:'unk' }, 'не видна по USB — можно вписать вручную')),
+      el('div', { class:'row', style:'margin-top:14px' }, el('button', { class:'btn' }, 'Изменить'), el('button', { class:'btn danger', onclick: () => modal(`Забыть ${d.name}?`, `Удалится Readers\\PB${d.code}.json. Готовые файлы в папке PB${d.code} останутся.`, 'Забыть', () => toast('Читалка забыта')) }, 'Забыть читалку')))); }
+  m.append(el('div', { class:'page' }, el('div', { class:'head' }, el('div', { class:'grow' }, el('h1', {}, 'Настройки'), el('p', {}, 'Общие настройки программы и отдельные — для каждой читалки.'))), el('div', { class:'settings' }, nav, body)));
+}
+
+/* ===================== окна */
+function modal(title, text, yes, onYes) {
+  const box = $('#modal'), back = $('#modalBack');
+  box.replaceChildren(el('h2', {}, title), el('p', { style:'margin:0;color:var(--muted)' }, text),
+    el('div', { class:'foot', style:'margin-top:22px' }, el('button', { class:'btn', onclick: close }, 'Отмена'), el('button', { class:'btn primary', onclick: () => { close(); onYes(); } }, yes)));
+  back.classList.add('open'); back.onclick = e => { if (e.target === back) close(); };
+  function close() { back.classList.remove('open'); }
+}
+function chooser() {
+  const box = $('#modal'), back = $('#modalBack');
+  box.replaceChildren(el('h2', {}, 'С какой читалкой работаем?'), el('p', { style:'margin:0;color:var(--muted)' }, 'Читалка не подключена. Выберите одну из сохранённых — все разделы будут работать для неё. Сменить можно в «Настройках».'),
+    el('div', { class:'choices' }, ...Object.keys(DEV).map(k => el('button', { onclick: () => { S.selected = k; back.classList.remove('open'); render(); } },
+      el('span', { html: art(k, 46) }), el('b', {}, DEV[k].name), el('span', { class:'chip mute' }, `PB${DEV[k].code}`), el('small', {}, `${DEV[k].inch} · ${DEV[k].res} · последний раз: ${DEV[k].seen}`)))),
+    el('div', { class:'foot' }, el('small', { style:'color:var(--muted);margin-right:auto;align-self:center' }, 'Подключите читалку — окно закроется само')));
+  back.classList.add('open'); back.onclick = null;
+}
+
+/* ===================== план работ */
+function planPage() {
+  const w = el('div', { class:'page plan', html: document.getElementById('planText').innerHTML });
+  w.prepend(el('div', { class:'head' }, el('div', { class:'grow' }, el('h1', {}, 'План работ'), el('p', {}, 'Этап 1 из ТЗ: анализ требований и план. Прототип — слева, по разделам.')), el('button', { class:'btn', onclick: () => go(S.page) }, 'К прототипу')));
+  return w;
+}
+
+/* ===================== сценарии запуска */
+function scenario(v) {
+  S.scenario = v; $('#modalBack').classList.remove('open');
+  if (v === 'connected') { S.connected = 'c3'; S.selected = 'c3'; }
+  if (v === 'saved') { S.connected = null; S.selected = null; render(); chooser(); return; }
+  if (v === 'none') { S.connected = null; S.selected = null; S.page = 'device'; }
+  render();
+}
+$('#scenario').onchange = e => scenario(e.target.value);
+$('#themeBtn').onclick = () => { S.theme = S.theme === 'dark' ? 'light' : 'dark'; render(); };
+$('#planBtn').onclick = () => { S.plan = !S.plan; render(); };
+document.addEventListener('click', () => document.querySelectorAll('.hist-menu.open').forEach(x => x.classList.remove('open')));
+addEventListener('keydown', e => { if (e.key === 'Escape') { $('#drawer').classList.remove('open'); $('#drawerBack').classList.remove('open'); if (S.scenario !== 'saved' || S.selected) $('#modalBack').classList.remove('open'); } });
+render();
+</script>
+
+<template id="planText">
+<section class="panel">
+<h2>Что меняется по сравнению с нынешней сборкой</h2>
+<ul>
+<li><b>Одна текущая читалка на всю программу.</b> Выбор читалки из разделов убирается. Подключённая выбирается сама, сменить можно только в «Настройках».</li>
+<li><b>Читалка сохраняется сама</b> при первом подключении, без кнопки «Запомнить», в <span class="code">Readers\PB743K3.json</span>.</li>
+<li><b>Всё лежит рядом с exe:</b> <span class="code">Config.json</span>, <span class="code">Readers\</span>, папка каждой читалки с Books / Comics / Manga / Wallpapers / Sleep_icons.</li>
+<li><b>Новые возможности:</b> раздел «Моё устройство» сверху, загрузка книг и комиксов на читалку, каталоги работ в обоях и иконке сна, автоустановка и откат иконки сна, TXT → FB2, настройки для каждой книги, история папок, отдельные настройки каждой читалки.</li>
+<li><b>Остаётся и используется заново:</b> ядро на Rust (сжатие, архивы, названия, предпросмотр), распознавание читалки по USB, справочник из 30 моделей, перенесённые редакторы обоев и иконки сна, иконка «закладка-капля».</li>
+</ul>
+</section>
+<section class="panel">
+<h2>Как выбирается читалка</h2>
+<table>
+<tr><th>При запуске</th><th>Что делает программа</th></tr>
+<tr><td>Подключена одна читалка</td><td>Берёт её; если она новая — сохраняет профиль и папки.</td></tr>
+<tr><td>Подключено несколько</td><td>Берёт ту, что была текущей в прошлый раз; если её нет среди подключённых — первую по букве диска и сообщает об этом.</td></tr>
+<tr><td>Не подключена, есть сохранённые</td><td>Окно «С какой читалкой работаем?». Если подключить читалку, пока окно открыто, оно закроется само.</td></tr>
+<tr><td>Нет ни подключённой, ни сохранённой</td><td>Экран «Подключите читалку» вместо разделов. Настройки доступны.</td></tr>
+<tr><td>Читалку подключили во время работы</td><td>Если это текущая — разделы оживают (кнопки «на читалку»). Если другая — предложение переключиться, без автоматической смены.</td></tr>
+</table>
+</section>
+<section class="panel">
+<h2>Этапы разработки (после одобрения прототипа)</h2>
+<ol>
+<li><b>Основа:</b> данные рядом с exe (Config.json, Readers, папки читалок), автосохранение читалки, текущая читалка, история папок, перенос старых настроек.</li>
+<li><b>Моё устройство</b> и окна выбора и подключения; настройки (общие, папки, сброс, подразделы читалок).</li>
+<li><b>Комиксы:</b> без выбора читалки, папки читалки по умолчанию, загрузка на читалку с проверкой места.</li>
+<li><b>Обои:</b> каталог работ (картинка и проект для повторной правки), сохранение и загрузка на читалку.</li>
+<li><b>Иконка сна:</b> автоустановка после сохранения или при подключении, резервные копии и откат, каталог работ.</li>
+<li><b>Книги:</b> перенос из pb-tools на Rust (обложки, чистка рекламы с подтверждением), TXT → FB2, настройки каждой книги, загрузка на читалку.</li>
+<li><b>Один exe:</b> встроить WebView2Loader.dll (сейчас он лежит рядом).</li>
+<li><b>Аудит и проверка:</b> дубли, мёртвый код, производительность, тесты, сборка, скриншоты, архив.</li>
+</ol>
+</section>
+<section class="panel">
+<h2>Мои допущения — поправь, если не так</h2>
+<div class="q"><b>Версия прошивки.</b> По USB её не видно, проверено на обеих читалках. В карточке будет «не видна по USB». В настройках читалки её можно вписать вручную.</div>
+<div class="q"><b>Процессор, память, батарея</b> — тоже не видны по USB, будут помечены так же. Без Табло и программ на читалке иначе никак.</div>
+<div class="q"><b>Автоустановка иконки сна.</b> «Сохранить» сразу ставит иконку на подключённую текущую читалку. Если она не подключена — иконка встанет сама при следующем подключении. Перед заменой — резервная копия на читалке и откат из списка. Это можно выключить в настройках.</div>
+<div class="q"><b>Каталог работ.</b> Вместе с BMP сохраняется проект: исходная картинка и настройки. Работу из каталога можно открыть и продолжить править, а не только загрузить готовый файл.</div>
+<div class="q"><b>Две одинаковые читалки.</b> Файлы <span class="code">PB743K3.json</span> и <span class="code">PB743K3-2.json</span>, различаются по метке на самой читалке.</div>
+<div class="q"><b>Загрузка на читалку</b> копирует готовые файлы в папку читалки из её настроек. Перед копированием проверяется свободное место. Файл с тем же именем заменяется только после подтверждения.</div>
+<div class="q"><b>Манга и комиксы</b> — один раздел «Комиксы», но готовое раскладывается по двум папкам: источник «Манга» → Manga, «Комиксы» → Comics.</div>
+</section>
+<section class="panel">
+<h2>Риски</h2>
+<ul>
+<li><b>Книги — самый большой этап:</b> перенос логики PowerShell на Rust и новый TXT → FB2. Проверяю на тех же тестовых книгах и epubcheck.</li>
+<li><b>Один exe:</b> загрузчик WebView2 при сборке из Linux подключается как отдельная DLL. Встроить его — отдельная техническая задача. Если не выйдет, DLL останется рядом, и я скажу об этом.</li>
+<li><b>Запускать exe в Windows я не могу:</b> на каждом этапе нужен твой скриншот или фото.</li>
+</ul>
+</section>
+</template>
+</body>
+</html>

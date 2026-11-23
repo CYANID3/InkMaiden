@@ -1,0 +1,23 @@
+[workspace]
+resolver = "2"
+members = ["app", "crates/*"]
+
+[workspace.package]
+version = "0.18.0"
+edition = "2021"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 4
+strip = true
+panic = "unwind"
+
+[profile.dev.package."*"]
+opt-level = 2
+
+[patch.crates-io]
+# исправленная сборка unrar под Windows из Linux (см. build-support/unrar_sys/build.rs)
+unrar_sys = { path = "build-support/unrar_sys" }
+# WebView2Loader.dll — отложенная загрузка, чтобы встроить DLL в exe (см. app/src/webview.rs)
+webview2-com-sys = { path = "build-support/webview2-com-sys" }
